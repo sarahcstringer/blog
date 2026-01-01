@@ -1,5 +1,5 @@
 +++
-title = "Claude Code beyond prompting: What I learned in my first three weeks"
+title = "Claude Code beyond prompting"
 description = "Turns out I'd been using a Swiss Army knife with only the main blade"
 date = "2025-12-31"
 
