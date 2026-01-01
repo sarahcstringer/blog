@@ -16,9 +16,9 @@ Adding AI to my technical writing workflow felt like a huge accelerant. I was ge
 
 Then I joined Anthropic to write documentation for Claude Code, and within the first week I realized: I'd been using a Swiss Army knife but only the main blade. There were scissors, a screwdriver, and a tiny saw folded in there the whole time.
 
-I'd stumbled into using one powerful feature (`CLAUDE.md`) and assumed that was it. Turns out there's a whole ecosystem: slash commands you can save, subagents you can configure and reuse, hooks that run automatically, plugins people have already built. I just had no idea any of it existed.
+Turns out there's a whole ecosystem: slash commands you can save, subagents you can configure and reuse, hooks that run automatically, plugins people have already built.
 
-This post is about the tools I didn't know I was missing, and how they changed my technical writing workflow once I started using them intentionally.
+This post is about the tools I didn't know I was missing—and how they changed my technical writing workflow once I started using them intentionally.
 
 So here's what I've been learning. What Claude Code can actually do for technical writing workflows (among many others), way beyond "put your style guide in `CLAUDE.md` and start prompting."
 
@@ -188,7 +188,9 @@ But here's what took me longer to figure out: you can *save* subagent configurat
 
 This is where it gets useful for technical writing: the end-of-doc review gauntlet. Subagents run in their own isolated context. They only see what the main agent explicitly passes to them. This means you can kick off three parallel review subagents without them competing for your main conversation's context budget.
 
-When I'm finishing up a doc, there are several things I want to check that don't depend on each other. Here are three saved subagents I've configured:
+When finishing up a doc, there are several things you might want to check that don't depend on each other.
+
+Here's what this looks like in practice for a docs workflow. Here are three examples of saved subagents you might configure:
 
 **Technical accuracy reviewer** (`.claude/agents/tech-reviewer.md`):
 
@@ -265,9 +267,9 @@ For each common question, report:
 Suggest specific additions or clarifications.
 ```
 
-I can kick off all three at once. They run in parallel. I keep working (or take a coffee break), and when they're done I get three focused reports back. No context-switching, no re-explaining the same instructions, no waiting for one review to finish before starting the next.
+You could kick off all three at once. They run in parallel. You keep working (or take a coffee break), and when they're done you get three focused reports back. No context-switching, no re-explaining the same instructions, no waiting for one review to finish before starting the next.
 
-The progression was: prompting, then spawning subagents ad hoc, then saving subagent configurations. Each step removed a layer of repetition.
+The progression: start with prompting, then spawn subagents ad hoc, then save subagent configurations. Each step removes a layer of repetition.
 
 ([Full subagents documentation](https://code.claude.com/docs/en/sub-agents))
 
@@ -377,8 +379,6 @@ You don't need to set up everything at once. Add tools when you notice friction.
 
 ---
 
-Three weeks ago, I thought I'd mastered Claude Code with just `CLAUDE.md` and some good prompts. Turns out that was just the beginning. The tools I've been discovering since then haven't made the work feel automated or detached. They've made it feel more intentional. Less time repeating myself, more time designing workflows that actually help.
-
-I'm still early in this myself. Three weeks in, still learning, still finding things I didn't know existed. But that's kind of the point. You can get huge value from the basics, and then keep discovering more as you hit friction.
+Three weeks ago, I thought I'd mastered Claude Code with just `CLAUDE.md` and some good prompts. Turns out that was just the beginning. The tools I've been discovering since then haven't made the work feel automated or detached—they've made it feel more intentional. Less time repeating myself, more time designing workflows that actually help.
 
 If you're using Claude Code for docs work, I'd love to hear what you're exploring (or what you're still avoiding because it seems complicated).
