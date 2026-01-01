@@ -1,0 +1,115 @@
+<!-- Custom fonts: Radley for headers, Open Sans for body -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Radley:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+/* Body text - Open Sans (sans-serif) */
+body, p, li, td, th, .content {
+  font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* Headers - Radley (serif) */
+h1, h2, h3, h4, h5, h6,
+.header-title,
+.site-title,
+.post-title,
+article header h1 {
+  font-family: 'Radley', Georgia, serif !important;
+}
+
+/* Site title and navbar - Radley (serif) */
+header a[class*="font-semibold"],
+nav menu li a,
+header .text-2xl {
+  font-family: 'Radley', Georgia, serif !important;
+}
+
+/* Hide reading time estimates and the separator before it */
+time[datetime^="PT"] {
+  display: none !important;
+}
+span.middot:has(+ time[datetime^="PT"]) {
+  display: none !important;
+}
+
+/* Show and style post descriptions as subtitles */
+.post-description,
+article header .description,
+header .page-description {
+  display: block !important;
+  font-size: 1.2em;
+  font-style: italic;
+  color: #666;
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+}
+
+/* Remove decorative backticks from inline code */
+code::before,
+code::after {
+  content: "" !important;
+}
+
+/* Clickable header links */
+.header-anchor {
+  opacity: 0;
+  margin-left: 0.5em;
+  font-size: 0.8em;
+  text-decoration: none;
+  color: #666;
+  transition: opacity 0.2s;
+}
+
+h1:hover .header-anchor,
+h2:hover .header-anchor,
+h3:hover .header-anchor,
+h4:hover .header-anchor,
+h5:hover .header-anchor,
+h6:hover .header-anchor {
+  opacity: 1;
+}
+
+.header-anchor:hover {
+  color: #0066cc;
+}
+</style>
+
+<script>
+// Add clickable anchor links to all headers
+document.addEventListener('DOMContentLoaded', function() {
+  const headers = document.querySelectorAll('h2[id], h3[id], h4[id], h5[id], h6[id]');
+
+  headers.forEach(header => {
+    const id = header.getAttribute('id');
+    if (!id) return;
+
+    const anchor = document.createElement('a');
+    anchor.className = 'header-anchor';
+    anchor.href = `#${id}`;
+    anchor.innerHTML = '#';
+    anchor.title = 'Copy link to clipboard';
+
+    // Click to copy link to clipboard and update URL
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const url = window.location.origin + window.location.pathname + `#${id}`;
+
+      // Update the URL bar
+      window.history.pushState(null, '', `#${id}`);
+
+      // Copy to clipboard
+      navigator.clipboard.writeText(url).then(() => {
+        // Visual feedback
+        const originalText = anchor.innerHTML;
+        anchor.innerHTML = '✓';
+        setTimeout(() => {
+          anchor.innerHTML = originalText;
+        }, 1000);
+      });
+    });
+
+    header.appendChild(anchor);
+  });
+});
+</script>
