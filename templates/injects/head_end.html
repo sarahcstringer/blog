@@ -124,6 +124,14 @@ code::after {
   content: "" !important;
 }
 
+/* Remove decorative quotes from blockquotes */
+blockquote::before,
+blockquote::after,
+blockquote p::before,
+blockquote p::after {
+  content: "" !important;
+}
+
 /* Clickable header links */
 .header-anchor {
   opacity: 0;
