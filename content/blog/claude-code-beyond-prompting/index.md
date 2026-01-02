@@ -16,6 +16,10 @@ That felt like a complete workflow. I’d heard about things like subagents, ski
 
 On my first day writing documentation for Claude Code, I realized I’d been using a Swiss Army knife with only the main blade. The other tools were there the whole time, each better suited for certain kinds of work. I just hadn’t learned when to reach for them.
 
+That realization is what led me to start forming a clearer mental model for how these tools fit together.
+
+*Note: this is a personal mental model I’ve been building through hands-on use, not an official or exhaustive guide.*
+
 ## Where I started (and where you might be too)
 
 The `CLAUDE.md` file was my first big unlock. If you haven’t done this yet, start here: create a `CLAUDE.md` file in your project root (or in a `.claude/` directory) and put your universal writing guidelines there. It’s the highest-impact, lowest-effort improvement you can make.
