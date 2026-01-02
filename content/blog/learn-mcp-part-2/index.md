@@ -41,7 +41,8 @@ This is probably the best way to get moving. Here, I'll use Cursor as an example
 
 Here's my `~/.cursor/mcp.json`, which connects to three different MCP servers that contain docs for the different tools I use (WRITER, Mintlify, and Cursor):
 
-`{
+```json
+{
   "mcpServers": {
     "Writer Docs": {
       "url": "https://dev.writer.com/mcp"
@@ -53,7 +54,10 @@ Here's my `~/.cursor/mcp.json`, which connects to three different MCP servers th
       "url": "https://docs.cursor.com/mcp"
     }
   }
-}`You can verify these URLs work by visiting them in your browser. They should return JSON describing the server capabilities.
+}
+```
+
+You can verify these URLs work by visiting them in your browser. They should return JSON describing the server capabilities.
 
 ### Try it out
 
@@ -99,7 +103,8 @@ After some trial and error and checking out the[ MCP specification](https://gith
 
 First, you need to initialize a connection and send an initialize request using `jsonrpc 2.0`. This [initialize method is from the MCP](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/schema/2025-06-18/schema.ts#L172) spec, so it’s standard for all MCP requests.
 
-`# 1. Initialize the connection
+```bash
+# 1. Initialize the connection
 curl -X POST "https://www.mintlify.com/docs/mcp" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \
@@ -112,14 +117,22 @@ curl -X POST "https://www.mintlify.com/docs/mcp" \
       "capabilities": {},
       "clientInfo": {"name": "test-client", "version": "0.1"}
     }
-  }'`Success! It returns [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) with the actual available tools:
+  }'
+```
 
-`event: message
-data: {"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{"SearchMintlify":{"name":"SearchMintlify","description":"Search across the Mintlify knowledge base to find relevant information...","method":"","pathTemplate":"","parameters":[],"inputSchema":{"type":"object","properties":{"query":{"type":"string","description":"A query to search the content with."}},"required":["query"]},"executionParameters":[],"securityRequirements":[],"operationId":"MintlifyDefaultSearch"},"listChanged":true}},"serverInfo":{"name":"Mintlify","version":"1.0.0"}},"jsonrpc":"2.0","id":1}`Then, you can call a tool. You can see in the response above that there’s a tool called `SearchMintlify` that takes a required query argument.
+Success! It returns [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) with the actual available tools:
+
+```
+event: message
+data: {"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{"SearchMintlify":{"name":"SearchMintlify","description":"Search across the Mintlify knowledge base to find relevant information...","method":"","pathTemplate":"","parameters":[],"inputSchema":{"type":"object","properties":{"query":{"type":"string","description":"A query to search the content with."}},"required":["query"]},"executionParameters":[],"securityRequirements":[],"operationId":"MintlifyDefaultSearch"},"listChanged":true}},"serverInfo":{"name":"Mintlify","version":"1.0.0"}},"jsonrpc":"2.0","id":1}
+```
+
+Then, you can call a tool. You can see in the response above that there’s a tool called `SearchMintlify` that takes a required query argument.
 
 The `tools/call` method is [specifically defined within the MCP spec as well](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/schema/2025-06-18/schema.ts#L172). The LLM can see from this tools list what it needs to plug in to provide when it calls the tool.
 
-`# 2. Call a tool (note the exact tool name from the capabilities response)
+```bash
+# 2. Call a tool (note the exact tool name from the capabilities response)
 curl -X POST "https://www.mintlify.com/docs/mcp" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \
@@ -131,11 +144,17 @@ curl -X POST "https://www.mintlify.com/docs/mcp" \
       "name": "SearchMintlify",
       "arguments": {"query": "API authentication"}
     }
-  }'`And when it works, you get back:
+  }'
+```
 
-`event: message
-data: {"result":{"content":[{"type":"text","text":"Title: Authentication\nLink: https://www.mintlify.com/docs/api-playground/mdx/authentication\nContent: You can set authentication parameters to let users use their real API keys..."}]}}`
-### Here’s what the full flow looks like:
+And when it works, you get back:
+
+```
+event: message
+data: {"result":{"content":[{"type":"text","text":"Title: Authentication\nLink: https://www.mintlify.com/docs/api-playground/mdx/authentication\nContent: You can set authentication parameters to let users use their real API keys..."}]}}
+```
+
+### Here's what the full flow looks like:
 
 ![](06b50051-6c2a-4881-bb5c-7a23f820e32e.png)
 
@@ -163,20 +182,29 @@ With Strands, you can swap out WRITER models for other model providers if you us
 
 To follow along, first you’d install Strands with Writer (or your model provider, you can [find the info in the Strands docs](https://strandsagents.com/latest/documentation/docs/user-guide/concepts/model-providers/amazon-bedrock/)) and tool support:
 
-`pip install 'strands-agents[writer]' strands-agents-tools`You’d also need an API key for the model provider you’re using.
+```bash
+pip install 'strands-agents[writer]' strands-agents-tools
+```
+
+You'd also need an API key for the model provider you're using.
 
 Below I’ll walk through the agent I built to answer questions about the three different tools I'm using by pulling from their docs MCP servers. It creates connections to multiple MCP servers, combines all their tools, and lets the AI agent decide which ones to use for each question.[ See the full code in this Gist.](https://gist.github.com/sarahcstringer/9d07e30fb3a4a6e2b5474266852284a6)
 
 First, import the dependencies.
 
-`import os
+```python
+import os
 
 from mcp.client.streamable_http import streamablehttp_client
 from strands import Agent
 from strands.models.writer import WriterModel
-from strands.tools.mcp import MCPClient`The next section configures the Strands Agent. It creates streamable http connections to the three servers, configures the model to use [Palmyra X5](https://www.google.com/search?q=palmyra+x5&oq=palmyra+x5&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORiABDIHCAEQABiABDIHCAIQABiABDIHCAMQABiABDIICAQQABgWGB4yCAgFEAAYFhgeMggIBhAAGBYYHjIICAcQABgWGB4yCAgIEAAYFhgeMgcICRAAGO8F0gEIMTM4NWowajeoAgCwAgA&sourceid=chrome&ie=UTF-8), and stores the system prompt for the agent.
+from strands.tools.mcp import MCPClient
+```
 
-`class StrandsResearchAgent:
+The next section configures the Strands Agent. It creates streamable http connections to the three servers, configures the model to use [Palmyra X5](https://writer.com/blog/long-context-palmyra-x5/), and stores the system prompt for the agent.
+
+```python
+class StrandsResearchAgent:
     def __init__(self):
         """Initialize MCP clients for documentation servers"""
         # Create MCP clients for each documentation server
@@ -206,48 +234,56 @@ from strands.tools.mcp import MCPClient`The next section configures the Strands 
         3. Synthesize information from multiple sources when helpful
         4. Provide practical, actionable answers with examples when possible
         Be efficient with tool usage - only search the documentation that's relevant to the specific question.
-        """`The script then starts the chat loop. It opens the connections to the MCP servers so they’re available during the context of the agent chat. Then it provides the list of all the available tools from the MCP clients to the agent, along with the model and system prompt defined earlier.
+        """
+```
 
-`    def chat_loop(self):
-        """Interactive chat loop for research questions"""
-        print("\n🤖 Strands Research Agent (Palmyra X5) ready!")
-        print("Ask me about Writer, Mintlify, or Cursor documentation.")
-        print("Type 'quit' to exit.\n")
+The script then starts the chat loop. It opens the connections to the MCP servers so they’re available during the context of the agent chat. Then it provides the list of all the available tools from the MCP clients to the agent, along with the model and system prompt defined earlier.
 
-        # Keep MCP clients connected for the entire chat session to maintain conversation history
-        with self.mintlify_client, self.cursor_client, self.writer_client:
-            # Combine tools from all servers
-            all_tools = (
-                self.writer_client.list_tools_sync()
-                + self.mintlify_client.list_tools_sync()
-                + self.cursor_client.list_tools_sync()
-            )
+```python
+def chat_loop(self):
+    """Interactive chat loop for research questions"""
+    print("\n🤖 Strands Research Agent (Palmyra X5) ready!")
+    print("Ask me about Writer, Mintlify, or Cursor documentation.")
+    print("Type 'quit' to exit.\n")
 
-            # Create a Strands agent with Palmyra X5 and all MCP tools
-            # This agent will maintain conversation history across all questions
-            agent = Agent(
-                model=self.model,  # Palmyra X5 model defined in __init__
-                tools=all_tools,  # Open MCP tool connections defined above
-                system_prompt=self.system_prompt,  # System prompt defined in __init__
-            )`This is the part that really got me excited. I just pass the connections to the Strands agent as tools and it figures out the rest. I don't have to write any logic for "when should you search Writer docs vs Cursor docs" - the AI agent sees the available tools and their descriptions and makes intelligent decisions about which ones to use.
+    # Keep MCP clients connected for the entire chat session to maintain conversation history
+    with self.mintlify_client, self.cursor_client, self.writer_client:
+        # Combine tools from all servers
+        all_tools = (
+            self.writer_client.list_tools_sync()
+            + self.mintlify_client.list_tools_sync()
+            + self.cursor_client.list_tools_sync()
+        )
+
+        # Create a Strands agent with Palmyra X5 and all MCP tools
+        # This agent will maintain conversation history across all questions
+        agent = Agent(
+            model=self.model,  # Palmyra X5 model defined in __init__
+            tools=all_tools,  # Open MCP tool connections defined above
+            system_prompt=self.system_prompt,  # System prompt defined in __init__
+        )
+```
+
+This is the part that really got me excited. I just pass the connections to the Strands agent as tools and it figures out the rest. I don't have to write any logic for "when should you search Writer docs vs Cursor docs" - the AI agent sees the available tools and their descriptions and makes intelligent decisions about which ones to use.
 
 The last part is running the chat loop, where the script accepts input from the user, passes it back to the model, and streams the final results back to stdout.
 
-` # Use the same agent for all questions to maintain conversation history
-            while True:
-                question = input("You: ").strip()
-                if question.lower() in ["quit", "exit"]:
-                    break
+```python
+# Use the same agent for all questions to maintain conversation history
+while True:
+    question = input("You: ").strip()
+    if question.lower() in ["quit", "exit"]:
+        break
 
-                if question:
-                    print("🔍 Researching...")
-                    try:
-                        # By default, the agent streams the response to stdout
-                        # More info: https://strandsagents.com/latest/documentation/docs/user-guide/concepts/streaming/callback-handlers/
-                        agent(question)
-                        print("\n")
-                    except Exception as e:
-                        print(f"❌ Error: {e}\n")
+    if question:
+        print("🔍 Researching...")
+        try:
+            # By default, the agent streams the response to stdout
+            # More info: https://strandsagents.com/latest/documentation/docs/user-guide/concepts/streaming/callback-handlers/
+            agent(question)
+            print("\n")
+        except Exception as e:
+            print(f"❌ Error: {e}\n")
 
 # Usage examples
 def main():
@@ -257,7 +293,10 @@ def main():
     agent.chat_loop()
 
 if __name__ == "__main__":
-    main()`[See the full code here.](https://gist.github.com/sarahcstringer/9d07e30fb3a4a6e2b5474266852284a6)
+    main()
+```
+
+[See the full code here.](https://gist.github.com/sarahcstringer/9d07e30fb3a4a6e2b5474266852284a6)
 
 Here’s an example of using it:
 
@@ -291,9 +330,13 @@ One thing you might notice is that some MCP tools require authentication to exte
 
 Interactive clients like Cursor or Claude can prompt you for API keys or other credentials when needed. If you’re building your own programmatic agent that needs credentials, you’d need to provide them upfront. You can handle this by passing authentication headers when creating the MCP client:
 
-`self.writer_client = MCPClient(
+```python
+self.writer_client = MCPClient(
     lambda: streamablehttp_client("https://dev.writer.com/mcp",
-        headers={"Authorization": f"Bearer {writer_api_key}"}))`This is one area where the MCP ecosystem is actively evolving. The MCP specification now includes comprehensive OAuth 2.1 support for HTTP-based transports, with proper authorization flows, dynamic client registration, and standardized discovery mechanisms. However, the practical reality varies significantly between different implementations.
+        headers={"Authorization": f"Bearer {writer_api_key}"}))
+```
+
+This is one area where the MCP ecosystem is actively evolving. The MCP specification now includes comprehensive OAuth 2.1 support for HTTP-based transports, with proper authorization flows, dynamic client registration, and standardized discovery mechanisms. However, the practical reality varies significantly between different implementations.
 
 ### Debugging
 
