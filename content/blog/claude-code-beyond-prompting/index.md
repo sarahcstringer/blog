@@ -8,74 +8,44 @@ categories = ["Blog"]
 tags = ["AI", "Claude Code", "technical writing", "tooling", "workflows"]
 +++
 
-Before I joined Anthropic three weeks ago, I thought I was pretty good at Claude Code.
+Before I joined Anthropic, I thought I was pretty good at Claude Code.
 
-At my previous job, I used it constantly. I'd put our entire style guide into a `CLAUDE.md` (philosophy, voice, grammar rules, repo structure, the works), and that alone felt like a cheat code. Suddenly every edit Claude made followed our conventions automatically. No more reminding it about sentence case headings or active voice.
+I was using it to speed up my technical writing: generating diagrams I couldn’t make myself, catching inconsistencies quickly, and automating the most tedious parts of doc review. Putting our entire style guide into a `CLAUDE.md` made it even better. It wasn’t perfect, but it removed whole classes of style-related mistakes and shifted every edit closer to “done.”
 
-Adding AI to my technical writing workflow felt like a huge accelerant. I was generating diagrams I couldn't make myself, getting instant consistency checks, automating the tedious parts of doc reviews. I'd heard people mention subagents and skills and hooks, but I didn't quite get how they fit in. What I was doing worked great, so I just kept prompting.
+That felt like a complete workflow. I’d heard about things like subagents, skills, and hooks, but what I had was working well, so I never looked much deeper.
 
-Then I joined Anthropic to write documentation for Claude Code, and within the first week I realized: I'd been using a Swiss Army knife but only the main blade. There were scissors, a screwdriver, and a tiny saw folded in there the whole time.
-
-Turns out there's a whole ecosystem: slash commands you can save, subagents you can configure and reuse, hooks that run automatically, plugins people have already built.
-
-This post is about the tools I didn't know I was missing—and how they changed my technical writing workflow once I started using them intentionally.
-
-So here's what I've been learning. What Claude Code can actually do for technical writing workflows (among many others), way beyond "put your style guide in `CLAUDE.md` and start prompting."
+On my first day writing documentation for Claude Code, I realized I’d been using a Swiss Army knife with only the main blade. The other tools were there the whole time, each better suited for certain kinds of work. I just hadn’t learned when to reach for them.
 
 ## Where I started (and where you might be too)
 
-The `CLAUDE.md` file was my first big unlock. If you haven't done this yet, start here. It's the highest-impact, lowest-effort improvement you can make.
+The `CLAUDE.md` file was my first big unlock. If you haven’t done this yet, start here: create a `CLAUDE.md` file in your project root (or in a `.claude/` directory) and put your universal writing guidelines there. It’s the highest-impact, lowest-effort improvement you can make.
 
-Mine had everything: our documentation philosophy, voice and tone guidelines, grammar rules, formatting conventions, repo structure, even notes about our publishing workflow. Claude reads this automatically at the start of every conversation, so every edit followed our conventions without me having to remind it.
+At first, I put everything in it. This included documentation philosophy, voice and tone, grammar rules, formatting conventions, and notes about our publishing workflow. Because Claude reads this file automatically at the start of every conversation, every edit followed our conventions without repeated reminders.
 
-The tradeoff: since `CLAUDE.md` loads fully at the start of every conversation, every byte counts toward your context limit from the beginning. This makes it perfect for universal guidelines that apply to everything, but not ideal for specialized knowledge you only need occasionally.
+That worked well. The issue was not usefulness, but scope. I started adding highly specific, task-level instructions and rewriting the same guidance. Since `CLAUDE.md` loads in full at the start of every conversation, every extra byte counts toward your context window and token usage. It’s best suited to universal rules, not specialized knowledge you only need occasionally.
 
-Here's a taste of what the voice section looked like:
+## What else Claude Code can do (that I wasn’t using)
 
-```markdown
-## Voice and tone
-
-Readers are busy software engineers solving problems. Be direct, practical, and respect their time.
-
-- Address the reader as "you"
-- Use active voice
-- Lead with what the reader can DO, not what the product IS
-...
-```
-
-I'd also connected some frontend MCP servers so Claude could actually look at my local preview and catch visual issues. I'd even tried a few plugins for code quality checks.
-
-That got me really far. If you're doing this much, you're probably already ahead of most people using AI for docs work.
-
-But here's what I didn't realize: my `CLAUDE.md` was doing a lot of heavy lifting that could be broken out into more specialized tools, and I kept rewriting tasks I wanted to perform frequently. There was also a whole layer of capability I wasn't touching at all.
-
-## What else Claude Code can do (that I wasn't using)
-
-Here are the pieces I'd heard about but never actually tried, and what clicked once I did.
+These are the tools you can reach for beyond prompting and `CLAUDE.md`, and the kinds of technical writing tasks each one is best suited for.
 
 **Quick summary:**
-- [`CLAUDE.md`](#where-i-started-and-where-you-might-be-too): Universal guidelines (loads every conversation)
-- [Slash commands](#slash-commands-one-prompt-saved-forever): Saved prompts you invoke by name
-- [Skills](#skills-context-that-loads-only-when-you-need-it): Specialized instructions that load on-demand
-- [Subagents](#subagents-parallel-actions-without-losing-focus): Parallel work with isolated context
-- [Hooks](#hooks-automation-that-runs-without-you-asking): Automatic checks/actions
-- [Plugins](#plugins-bundle-it-all-up-and-share-it): Bundle it all and share
+- [Slash commands](#slash-commands-one-prompt-saved-forever): saved prompts you invoke by name
+- [Skills](#skills-context-that-loads-only-when-you-need-it): specialized instructions that load on demand
+- [Subagents](#subagents-parallel-actions-without-losing-focus): parallel work with isolated context
+- [Hooks](#hooks-automation-that-runs-without-you-asking): automatic checks and actions
+- [Plugins](#plugins-bundle-it-all-up-and-share-it): bundle everything and share it
 
-Start with `CLAUDE.md`, add the others only when you feel friction.
+You don’t need to adopt all of these at once. Start with `CLAUDE.md`, then add the others only when you feel friction.
 
 ### Slash commands: One prompt, saved forever
 
-I'd used a few slash commands before, but I wasn't thinking about them systematically. Turns out I should have just reviewed the list of built-in ones, because there's a lot I was missing; things like `/rename` to clean up session names and `/init` to get a project off the ground. So good.
+Start with [the built-in slash commands](https://code.claude.com/docs/en/slash-commands): `/rename` to clean up session names, `/init` to get a project off the ground.
 
-Beyond the built-ins, any prompt you type more than twice could really just be a custom command. They're Markdown files you store in `.claude/commands/`.
+Beyond the built-ins, any prompt you type more than twice can be a custom command. They're Markdown files you store in `.claude/commands/` and trigger within a Claude session.
 
-Unlike `CLAUDE.md`, slash commands don't load into context until you invoke them. Only their descriptions are available to Claude through a character-budgeted tool. This means you can have dozens of commands saved without cluttering your context.
+Here are two examples you might add to a technical writing toolkit:
 
-When you do invoke a command, it runs with your full project context: `CLAUDE.md`, conversation history, everything. You're just injecting a reusable prompt into the main agent. Compare this to subagents (covered below), which only get the specific context you pass to them.
-
-Here are two examples from a technical writing toolkit:
-
-**`/review`**, a full doc review checklist:
+**`/review`** (`.claude/commands/review.md`), a full doc review checklist:
 
 ```markdown
 Review this document for:
@@ -88,7 +58,7 @@ Review this document for:
 Categorize issues as: blocking, should fix, nice to have.
 ```
 
-**`/simplify`**, for when you've written something too dense:
+**`/simplify`** (`.claude/commands/simplify.md`), for when you've written something too dense:
 
 ```markdown
 Simplify this content for a developer who's new to the product.
@@ -98,21 +68,17 @@ Simplify this content for a developer who's new to the product.
 - Add an example if it would help
 ```
 
-You can run these with arguments: `/review en/quickstart.mdx` or `/simplify` with selected text.
-
-Pick one or two commands that solve your biggest friction points. You don't need a dozen to start getting value.
+You can run `/review` or `/simplify` and Claude will run that prompt on the content you've been working on.
 
 ([Full slash commands documentation](https://code.claude.com/docs/en/slash-commands))
 
 ### Skills: Context that loads only when you need it
 
-Having all my style guide information in `CLAUDE.md` was super useful, but it turns out I was using it as a hammer for every problem I encountered, when there were more appropriate tools available.
+I was also using `CLAUDE.md` for specialized workflows like API doc structure and tutorial formats. But `CLAUDE.md` eats into your token budget from the start of every conversation and not all of the information might be relevant to every session. Skills solve this.
 
-One issue with a giant `CLAUDE.md` file: Claude has a context limit. The more you add, the more likely something gets dropped, or Claude gets confused about what's relevant right now.
+They're directories with instructions, templates, and reference files. At startup, Claude only loads skill names and descriptions. The full `SKILL.md` file only loads when Claude decides from the task to use a skill.
 
-Skills are one way to solve this. They're directories with instructions, templates, and reference files. At startup, Claude only loads skill names and descriptions. The full `SKILL.md` file only loads when you (or Claude) trigger that skill and you confirm. This is way more efficient than putting everything in `CLAUDE.md`.
-
-For technical writing, you can set up skills for different doc types:
+In technical writing, one skill use case might be directions for different doc types, like a skill for API docs vs. tutorials. An API docs skill might look like this:
 
 **API documentation skill:**
 
@@ -125,23 +91,15 @@ For technical writing, you can set up skills for different doc types:
     └── common-mistakes.md # "Avoid these patterns"
 ```
 
-**Tutorial skill:**
+The `SKILL.md` file for this skill would look like:
 
-```
-.claude/skills/tutorials/
-├── SKILL.md           # How we structure tutorials
-├── template.md        # Intro, prerequisites, steps, next steps
-└── voice-examples.md  # Examples of our tutorial tone
-```
+````markdown
+---
+name: documenting-apis
+description: Provides structure and examples for writing API reference documentation. Use when creating or editing API documentation.
+---
 
-The supporting files (templates, examples) only get loaded when the task actually needs them. Claude discovers them through links in your `SKILL.md`, so you can keep detailed reference material available without it eating up context until it's relevant.
-
-The `SKILL.md` file tells Claude when to use this skill and how:
-
-```markdown
-# API Documentation Skill
-
-Use this skill when writing or editing API reference documentation.
+# API Documentation
 
 ## Structure
 Every API doc needs: Overview, Authentication, Endpoints, Error codes, Examples
@@ -150,55 +108,35 @@ Every API doc needs: Overview, Authentication, Endpoints, Error codes, Examples
 More formal than tutorials. Assume reader knows HTTP basics.
 
 ## Template
-See template.md for the standard structure. Don't skip sections.
-```
+See [template.md](template.md) for the standard structure. Don't skip sections.
+
+## Examples
+See [examples/good-example.md](examples/good-example.md) for reference patterns.
+````
+
+The supporting files (templates, examples) only load when the task actually needs them. Claude discovers them through links in your `SKILL.md`, so you can keep detailed reference material available without it eating up context until it's relevant.
 
 Now your `CLAUDE.md` can stay lean with only universal guidelines for your project, while specialized context loads automatically when you need it.
 
 ([Full skills documentation](https://code.claude.com/docs/en/skills))
 
----
-
-**A note on Skills vs MCP:** I've heard people say that Skills make MCP servers less useful, but that's not the case. They serve different purposes. **MCP is the connection to your data** (Slack, GitHub, Google Drive). **Skills are the instructions for how to use that data.**
-
-For example:
-- MCP server connects Claude to your GitHub issues
-- Skill says "When reviewing docs, check issues labeled 'documentation' for common user confusion"
-
-You can have MCP without skills (you just prompt every time), but skills paired with MCP are way more powerful. Skills turn "I have access to this data" into "here's when and how to use it."
-
-([MCP documentation](https://code.claude.com/docs/en/mcp))
-
----
-
 ### Subagents: Parallel actions without losing focus
 
-You might notice some overlap here. Couldn't `/review` also be a subagent? Yes. The main difference is context management.
+Subagents are separate Claude sessions that run in the background with their own context. The main agent passes specific context to them, and they report back when done.
 
-- **Slash command (`/review`)**: Runs in your main conversation with full context. Good when you want Claude to consider the entire discussion and project state.
-- **Subagent (review-agent)**: Runs in isolation with only the context you pass it. Good when you want to run multiple reviews in parallel or keep the main conversation focused.
+You can spawn them ad hoc for one-off tasks. But you can also save subagent configurations as Markdown files with YAML frontmatter in `.claude/agents/`. Once configured, they become reusable tools you invoke by name.
 
-You can have both. Use the slash command for quick, context-aware reviews. Use the subagent when you're juggling multiple tasks at once.
+I frequently use saved subagents for the end-of-doc review process: tech review, UX review, style review. They run in isolated context, which means I can kick off multiple reviews in parallel without competing for the main conversation's token budget.
 
-This is the feature I'd heard a lot about but never really understood. Subagents are separate Claude sessions that can run in the background with their own context. The main agent can inject specific context into them, and they report back when they're done.
-
-At first, I thought subagents were just something you spawn ad hoc. You can totally do that. Ask Claude Code to spin up a subagent for a one-off task and it will. That got me pretty far.
-
-But here's what took me longer to figure out: you can *save* subagent configurations. They're Markdown files with YAML frontmatter that live in `.claude/agents/`. Once configured, they become reusable tools you can invoke by name.
-
-This is where it gets useful for technical writing: the end-of-doc review gauntlet. Subagents run in their own isolated context. They only see what the main agent explicitly passes to them. This means you can kick off three parallel review subagents without them competing for your main conversation's context budget.
-
-When finishing up a doc, there are several things you might want to check that don't depend on each other.
-
-Here's what this looks like in practice for a docs workflow. Here are three examples of saved subagents you might configure:
+Here's an example of a saved subagents you might configure for this type of work (and you can use the `/agents` slash command to help you build these out instead of doing it manually):
 
 **Technical accuracy reviewer** (`.claude/agents/tech-reviewer.md`):
 
 ```markdown
 ---
 name: tech-reviewer
-description: Verifies documentation matches actual code behavior and internal sources of truth
-tools: Read, Grep, Glob, Bash
+description: Verifies documentation matches actual code behavior and internal sources of truth. Use when reviewing documentation for technical accuracy or when code has changed.
+tools: [Read, Grep, Glob, Bash]
 ---
 
 You are a technical accuracy reviewer for documentation.
@@ -217,65 +155,31 @@ For each section, report:
 Include specific line numbers and suggest corrections.
 ```
 
-**Code sample tester** (`.claude/agents/sample-tester.md`):
-
-```markdown
----
-name: sample-tester
-description: Runs all code samples in documentation to verify they work
-tools: Bash, Read, Write
----
-
-You are a code sample tester for documentation.
-
-When invoked:
-1. Extract all code blocks from the documentation
-2. Set up test environment: npm install or pip install as needed
-3. Run each sample, capturing output and errors
-4. Verify samples produce expected results
-
-For each code sample, report:
-- ✓ Works (runs without errors, output looks correct)
-- ⚠ Runs with warnings (works but has non-critical issues)
-- ✗ Fails (throws error or produces wrong output)
-
-Include the exact error message and suggested fix.
-```
-
-**User confusion checker** (`.claude/agents/confusion-checker.md`):
-
-```markdown
----
-name: confusion-checker
-description: Compares documentation against real user questions from GitHub issues
-tools: Bash, Grep, Read
----
-
-You are a user experience reviewer for documentation.
-
-When invoked:
-1. Search GitHub issues for user questions about this feature
-2. Identify common points of confusion
-3. Check if the documentation addresses these confusions
-4. Flag gaps where users are still getting stuck
-
-For each common question, report:
-- ✓ Addressed (doc clearly explains this)
-- ⚠ Partially addressed (mentioned but unclear)
-- ✗ Missing (users ask this but doc doesn't cover it)
-
-Suggest specific additions or clarifications.
-```
-
-You could kick off all three at once. They run in parallel. You keep working (or take a coffee break), and when they're done you get three focused reports back. No context-switching, no re-explaining the same instructions, no waiting for one review to finish before starting the next.
-
-The progression: start with prompting, then spawn subagents ad hoc, then save subagent configurations. Each step removes a layer of repetition.
+When you're ready for a review, you can kick this off and can run it in parallel with other subagents you have. You keep working (or take a coffee break), and when the subagent is done, you get a focused report back in the main conversation. 
 
 ([Full subagents documentation](https://code.claude.com/docs/en/sub-agents))
 
+---
+
+#### Subagents vs. skills vs. slash commands
+
+You might start to notice some overlap between these tools. Could the `/review` slash command also be a subagent? Or a skill? Yes; in some cases, you might even want a slash command and a subagent that perform similar tasks. The difference is not what they do, but how they handle context and who triggers them.
+
+| Tool | Context/isolation | Usually triggered by | When to use it |
+| ----- | ----- | ----- | ----- |
+| **Slash command** (`/review`) | Full main conversation context | You (explicit invocation: `/review`) | When you want Claude to consider the entire discussion and current project state. |
+| **Subagent** (`review-agent`) | Isolated context (only what you/agent pass to it) | You (tell Claude to run it) | When you want to run tasks in parallel or keep your main conversation focused. |
+| **Skill** (`review-skill`) | Loads specialized instructions on demand | Claude (infers from task context) | When you need structure, templates, or reference material without keeping it in context all the time. |
+
+*Note: The triggering can get messier in practice; for example, Claude can invoke custom slash commands, and you can explicitly ask Claude to use a specific skill. The table above covers the most common usage.*
+
+You can use more than one of these for the same kind of task. A slash command is useful for quick, context-aware checks. A subagent is better for parallel or background work. A skill is the right choice when the work needs deeper, reusable guidance without bloating your main context.
+
+---
+
 ### Hooks: Automation that runs without you asking
 
-Hooks are scripts that run automatically when certain things happen. You set them up once and forget about them.
+Hooks are scripts that run automatically when certain Claude Code events happen. You set them up once and then forget about them.
 
 A great one for technical writing: run your linter before any edit saves.
 
@@ -290,11 +194,11 @@ A great one for technical writing: run your linter before any edit saves.
 }
 ```
 
-Now Claude checks your style guide automatically before making changes. You catch issues immediately instead of in code review.
+Now whenever Claude edits your work, it runs linting automatically. You catch issues immediately instead of in code review.
 
-To be fair, Claude will often do this for you anyway if you add it to a skill, or even if you just do it manually a few times and Claude catches on that it should run the linter whenever it edits docs. But hooks make it deterministic. No relying on Claude to remember, no hoping it picks up the pattern. It just happens every time.
+Hooks make checks deterministic. No relying on Claude to remember, no hoping it picks up the pattern. It just happens every time.
 
-Another one that's been surprisingly useful: a sound notification when Claude finishes a message. I thought it would be annoying, but I tend to context switch while waiting for responses, and now I know when to come back without constantly checking.
+Another useful one: a sound notification when Claude finishes a message. I tend to context switch while waiting for responses, and this tells me when to come back without constantly checking.
 
 ```json
 {
@@ -307,23 +211,26 @@ Another one that's been surprisingly useful: a sound notification when Claude fi
 }
 ```
 
-There are a lot of places you can add hooks beyond just these. You can hook into the start of a session, before context compaction, after Claude sends a message, on session stop. Basically anywhere you'd want to inject a check or an action, there's probably a hook point for it.
+There are a lot of places you can add hooks beyond just these. You can hook into the start of a session, before context compaction, after Claude sends a message, on session stop; anywhere you'd want to inject a check or an action, there's probably a hook point for it.
 
 ([Full hooks documentation](https://code.claude.com/docs/en/hooks))
 
 ### Plugins: Bundle it all up and share it
 
-Once you've built up a collection of slash commands, skills, and saved subagents, you can package them as a plugin. This is basically a way to bundle your whole setup and share it with anyone else.
+Once you've built up a collection of slash commands, skills, subagents, and hooks, you can package them as a [plugin](https://code.claude.com/docs/en/plugins). This is a way to bundle your whole setup and then you can share it with others via a [marketplace](https://code.claude.com/docs/en/plugin-marketplaces).
 
 A quick note on sharing: if you store your commands, skills, and agents in your project's `.claude/` folder and commit them to git, your team automatically gets them when they clone the repo. That works great for project-specific setups.
 
-But if you want to share across multiple projects or distribute your setup more broadly, you can create and host a plugin. For technical writing, this is huge. Instead of every new person on the team figuring out the same workflows from scratch, you can hand them a plugin with everything already configured: the style guide in `CLAUDE.md`, the `/review` and `/simplify` commands, the API docs skill, the saved subagents for tech review and code testing. They install it and they're immediately working the same way you are.
+If you want to share across multiple projects or distribute your setup more broadly, you can create and host a plugin. This can be great for cross-functional stakeholders who also do technical writing, for example; instead of every person figuring out the same workflows from scratch, you can hand them a plugin with everything already configured.
 
-It also means you can version and iterate on your team's setup. Found a better way to structure the tech review subagent? Update the plugin. Everyone gets the improvement.
+To browse and install prebuilt plugins, run `/plugin`. This connects you to plugin marketplaces, which are registries of plugins you can install. The default marketplace from Anthropic is automatically included, but you can [add other community marketplaces](https://code.claude.com/docs/en/discover-plugins) if you want to explore more.
 
-To browse and install plugins, just run `/plugin`. This connects you to plugin marketplaces, which are registries of plugins you can install. The default one is Anthropic's, but you can [add other community marketplaces](https://code.claude.com/docs/en/discover-plugins) if you want to explore more.
+One plugin I use all the time is `commit-commands` from the Anthropic marketplace. It auto-drafts commit messages based on my changes. Way more useful than "update skills docs" but also not something I want to spend brainpower on.
 
-One I use all the time: `commit-commands`. It auto-drafts commit messages based on my changes. Way more useful than "update skills docs" but also not something I want to spend brainpower on.
+To get it:
+- Run `/plugin` within Claude Code
+- Search for "commit-commands"
+- Install it via the interactive menu
 
 And if you've built something useful, consider publishing it to a marketplace. The more people share what's working for them, the better the ecosystem gets.
 
@@ -361,24 +268,17 @@ The goal isn't to use all of these. It's to know they exist so you can reach for
 
 ## Where to start (for real)
 
-If you're not using Claude Code yet:
+If you’re not using Claude Code yet:
 
-1. Install it: follow the [quickstart guide](https://code.claude.com/docs/en/quickstart)
-2. Navigate to a docs repo: `cd your-docs && claude`
-3. Run `/init`
-
-The `/init` command analyzes your codebase and helps you set up a `CLAUDE.md`, slash commands, and subagents based on what Claude thinks would be useful for your project. It's a great way to bootstrap everything at once instead of building from scratch.
+1. Install it by following the [quickstart guide](https://code.claude.com/docs/en/quickstart).
+2. Navigate to a docs repo and open Claude Code: `cd your-docs && claude`.
+3. Start chatting
 
 If you're already using it but mainly just prompting:
 
-1. **Beef up your `CLAUDE.md`** if you haven't already. Put universal guidelines there, and consider breaking out specialized stuff into skills.
-2. **Create one slash command** for your most common task (maybe `/review`).
-3. **Try spawning a subagent** next time you're finishing a doc and need a parallel review. Once you find yourself repeating the same instructions, save it as a configuration you can reuse.
+1. **Run `/init`**: analyzes your codebase and sets up `CLAUDE.md`, slash commands, and subagents based on what would be useful for your project.
+2. **Add universal guidelines to `CLAUDE.md`**: voice, formatting rules, repo structure.
+3. **Create one slash command** for your most common task (maybe `/review`).
+4. **Spawn a subagent** for parallel reviews. When you repeat the same instructions, save it as a configuration.
 
 You don't need to set up everything at once. Add tools when you notice friction.
-
----
-
-Three weeks ago, I thought I'd mastered Claude Code with just `CLAUDE.md` and some good prompts. Turns out that was just the beginning. The tools I've been discovering since then haven't made the work feel automated or detached—they've made it feel more intentional. Less time repeating myself, more time designing workflows that actually help.
-
-If you're using Claude Code for docs work, I'd love to hear what you're exploring (or what you're still avoiding because it seems complicated).
