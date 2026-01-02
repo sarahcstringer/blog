@@ -5,7 +5,7 @@ theme = "linkita"
 
 # The site title and description; used in feeds by default.
 title = "Sarah Deaton"
-description = "On AI, developer tools, and the messy systems that shape our lives"
+description = "On AI, developer tools, technical writing, and whatever else catches my interest"
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
@@ -80,6 +80,9 @@ taxonomies = "off"
 paths_keep_dates = true
 
 [extra]
+# Use relative URLs for local development compatibility
+relative_urls = true
+
 # Linkita theme settings
 favicon = "/favicon.png"
 author = "Sarah Deaton"

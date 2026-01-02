@@ -10,8 +10,8 @@
 
   <header class="mb-16">
     <h1 class="my-0! pb-2.5">{{ page.title }}</h1>
-    {%- if page.description %}
-    <p class="post-description">{{ page.description }}</p>
+    {%- if page.extra.subtitle %}
+    <p class="post-description">{{ page.extra.subtitle }}</p>
     {%- endif %}
     {% include "partials/page_info.html" %}
   </header>

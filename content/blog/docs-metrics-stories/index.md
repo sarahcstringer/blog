@@ -1,13 +1,17 @@
 +++
 title = "Docs metrics and the stories we tell ourselves"
 date = "2025-09-23"
-description = "My roles prior to developer education were in site reliability and infrastructure."
+description = "Why documentation metrics are harder to interpret than SRE dashboards, and how to think about measuring docs impact without fooling yourself."
+
 [taxonomies]
 categories = ["Blog"]
 tags = ["documentation", "metrics", "measurement", "developer-education"]
+
+[extra]
+subtitle = "My roles prior to developer education were in site reliability and infrastructure."
 +++
 
-![](55d3d0ae-e021-444b-a279-996199591f42.png)
+![Illustration representing the challenge of measuring documentation effectiveness](55d3d0ae-e021-444b-a279-996199591f42.png)
 
 My roles prior to developer education were in site reliability and infrastructure. When I joined my first docs team, I immediately asked where our dashboards lived. The answer: *“There's an old Looker Studio dashboard pulling from Excel sheets that's been broken for a few months.”*
 
@@ -59,7 +63,7 @@ For a while, I let the lack of perfect measures paralyze me. I wanted the clean 
 
 Then I saw this image and it really hit me: the crooked ladder still gets you where you need to go.
 
-![diagram](7520a299-595d-4a9f-922b-3309c68a1b9b.jpeg)
+![A crooked ladder still reaches the top: illustration showing that imperfect measurement tools can still get you where you need to go](7520a299-595d-4a9f-922b-3309c68a1b9b.jpeg)
 
 So I decided to build my own imperfect ladder using tools I'd overlooked or dismissed before. 
 

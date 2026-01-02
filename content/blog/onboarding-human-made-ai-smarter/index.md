@@ -1,10 +1,14 @@
 +++
 title = "How onboarding a human made my AI smarter"
 date = "2025-09-21"
-description = "Apparently neither humans nor AI can read my mind?"
+description = "How creating onboarding documentation for a new teammate also improved my AI tools by providing the same context engineering both need to succeed."
+
 [taxonomies]
 categories = ["Blog"]
 tags = ["AI", "documentation", "onboarding", "context"]
+
+[extra]
+subtitle = "Apparently neither humans nor AI can read my mind?"
 +++
 
 The most recent team I joined had a set of docs but had never had a dedicated technical writer. It was a collection of information that had grown organically over time without style guides, linting, or any consistent voice.

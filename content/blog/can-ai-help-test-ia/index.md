@@ -1,10 +1,14 @@
 +++
 title = "Can AI help test IA? A Wikipedia game experiment"
 date = "2025-10-17"
-description = "I don't actually know, but it reminded me of a few things about human navigation."
+description = "Using the Claude Agent SDK to play the Wikipedia game as an experiment in testing information architecture with AI."
+
 [taxonomies]
 categories = ["Blog"]
 tags = ["IA", "AI", "testing", "information-architecture"]
+
+[extra]
+subtitle = "I don't actually know, but it reminded me of a few things about human navigation."
 +++
 
 I’ve been wondering for a while how to test or verify information architecture when I can’t actually sit down with users and watch them navigate the docs. User research is expensive, time-consuming, and hard to do at scale. Traditional metrics don’t feel like they capture the right things either.
@@ -33,7 +37,7 @@ I tried a few sample runs. I also cross-referenced [Six Degrees of Wikipedia](ht
 
 Sometimes the paths the agent took were the shortest possible paths, sometimes not, but they were always logical. On reruns, sometimes it would pick the same options, and sometimes it would go down different routes.
 
-![](cca82c91-cfc2-4285-b383-7389263ed48a.png)
+![Terminal output showing the agent's Wikipedia navigation paths and reasoning](cca82c91-cfc2-4285-b383-7389263ed48a.png)
 
 Here are a few example runs:
 
@@ -57,7 +61,7 @@ Here are a few example runs:
 
 - Skateboarding → Culture of the United States → American literature → British literature → Beowulf
 
-![](fe5ab114-676c-4631-8879-59e1cb6d821d.png)
+![Agent output showing methodical link evaluation during Wikipedia navigation](fe5ab114-676c-4631-8879-59e1cb6d821d.png)
 
 The agent was methodical and patient. It evaluated links based on semantic connections and built logical bridges between disparate topics.
 
@@ -77,7 +81,7 @@ I’d never actually heard of Shennong before, but the context around the link g
 
 When I had the agent play, its path was: Tea → Germany → Germanic peoples → Norse mythology.
 
-![](007f7809-ab5b-4933-8b4d-321a103764e3.png)
+![Comparison of human vs agent paths in the Wikipedia game from Tea to Norse mythology](007f7809-ab5b-4933-8b4d-321a103764e3.png)
 
 ## The gap between us
 

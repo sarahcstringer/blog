@@ -1,10 +1,14 @@
 +++
 title = "Learn MCP with me, part 1: what is this even for?"
 date = "2025-09-08"
-description = "Because LLMs can't stop hallucinating parameter names."
+description = "Why MCP exists and how it helps LLMs use APIs more reliably by providing structured guardrails instead of relying on hallucinated parameters."
+
 [taxonomies]
 categories = ["Blog"]
 tags = ["MCP", "AI", "APIs", "protocols"]
+
+[extra]
+subtitle = "Because LLMs can't stop hallucinating parameter names."
 +++
 
 I wrote this post because I found myself struggling with a very specific question: Why MCP when we already have APIs and so many ways to communicate programmatically?
@@ -19,7 +23,7 @@ But when I started to dig in, I couldn’t get past the question: what problem d
 
 We've already solved "connect different systems" multiple times. We’ve got REST, GraphQL, gRPC, even SOAP, and so many others. And then MCP shows up in 2024 saying "Here's a standardized way for AI to connect to external tools." What problem is it solving that REST + OpenAPI doesn't already solve? It felt like the [XKCD comic](https://xkcd.com/927/).
 
-![](b8b6e40d-3a45-4241-b988-aea108f47dcd.png)
+![XKCD comic about how standards proliferate: 14 competing standards leads to a new universal standard, resulting in 15 competing standards](b8b6e40d-3a45-4241-b988-aea108f47dcd.png)
 
 ## The answer: LLMs suck at using APIs
 
@@ -39,7 +43,7 @@ MCP doesn't replace APIs. It inserts a competency layer between LLMs and APIs. H
 
 - **Discovery built-in**: The LLM can ask "What tools are available?" rather than needing a preloaded spec.
 
-![](2a43ce7f-87f7-4b43-b128-210a781a3622.png)
+![Diagram showing MCP as a layer between AI applications and external tools, providing standardized interfaces and authentication handling](2a43ce7f-87f7-4b43-b128-210a781a3622.png)
 
 Instead of fragile API calls, the LLM gets a structured template it just fills in. It gets information back in a reliable, standardized way. It doesn’t have to guess that a GitHub API needs `repository_name` vs. `repo_name`; MCP ensures it always gets the right parameter structure. Then you can plug that into agents or tools like Cursor or Claude so they can interact with those systems.
 
@@ -49,7 +53,7 @@ I still had a few questions. Mainly, if an LLM can’t just look at an OpenAPI s
 
 The key is that MCP doesn’t rely on the model *parsing and reasoning* over a giant spec. Instead, the MCP runtime hands the LLM a structured template for each tool, enforces the parameters, and validates the output. The model isn’t “learning MCP” from training. It’s just filling in blanks inside a schema the runtime controls. That shift from “read this 50-page manual and hope you guess correctly” to “fill out this form, we’ll handle the rest” is what makes MCP reliably work where OpenAPI falls apart.
 
-![](6187b950-3160-45af-8414-236eab01944e.png)
+![Diagram illustrating how MCP transforms complex API interactions into simple fill-in-the-blank templates for LLMs](6187b950-3160-45af-8414-236eab01944e.png)
 
 ## When you would want to use MCP
 

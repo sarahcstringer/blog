@@ -1,18 +1,21 @@
 +++
 title = "On agency, abstraction, and AI-assisted coding"
-description = "I still feel like I'm using my brain?"
+description = "Reflections on AI-assisted coding, personal agency, and why working at higher levels of abstraction doesn't mean losing mastery or understanding."
 date = "2025-11-04"
 
 [taxonomies]
 categories = ["Blog"]
 tags = ["AI", "coding", "abstraction", "mastery"]
+
+[extra]
+subtitle = "I still feel like I'm using my brain?"
 +++
 
 I saw a screenshot of this email about AI-assisted coding and agency, and it sparked a lot of thoughts for me.
 
 The core argument was that AI-assisted coding trades long-term mastery for short-term outcomes, and that represents a loss of personal agency. Agency, in this framing, means having the courage to struggle through problems on your own, stretch beyond your current abilities, and build the kind of deep understanding that only comes from doing the hard work yourself.
 
-![](ccdea58e-6b15-49d6-bcb4-390fcc2f84ab.jpeg)
+![Screenshot of an email arguing that AI-assisted coding trades long-term mastery for short-term outcomes](ccdea58e-6b15-49d6-bcb4-390fcc2f84ab.jpeg)
 
 It’s a thoughtful argument, but I don’t experience it that way and wanted to share my perspective.
 

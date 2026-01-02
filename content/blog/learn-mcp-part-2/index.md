@@ -1,10 +1,14 @@
 +++
 title = "Learn MCP with me, part 2: working with MCP servers and clients"
 date = "2025-09-10"
-description = "Okay, I'm actually excited about MCP now."
+description = "A hands-on guide to connecting MCP servers to AI clients, debugging with curl, and building a multi-source documentation research agent."
+
 [taxonomies]
 categories = ["Blog"]
 tags = ["MCP", "AI", "documentation", "agents"]
+
+[extra]
+subtitle = "Okay, I'm actually excited about MCP now."
 +++
 
 In [Part 1](https://substack.com/home/post/p-173130074), I looked into *why* MCP exists: it's guardrails for LLMs to use APIs without screwing up. Next I wanted to dig into how to actually work with MCP servers.
@@ -25,7 +29,7 @@ To quickly recap:
 
 You configure the client to know about servers, then ask the AI to do things, and it figures out which tools to use.
 
-![](addbe398-b03f-4275-88ae-cbf2cefb2d09.png)
+![Diagram showing MCP architecture: clients like Claude Desktop and Cursor connecting to MCP servers that expose tools](addbe398-b03f-4275-88ae-cbf2cefb2d09.png)
 
 ## 1. Just get it working: plug into an AI app
 
@@ -65,7 +69,7 @@ I was initially confused about what to do next. How do you test it? How do you k
 
 Once you add your servers to Cursor, it's just a regular chat. MCP servers are essentially just tools your AI can use. It’s like any other function you might give an AI, like one that calculates averages or fetches weather data.
 
-![](d06a1c34-219e-48c9-89a3-b4f7dc54cec8.png)
+![Screenshot of Cursor chat showing MCP tools being used to search documentation](d06a1c34-219e-48c9-89a3-b4f7dc54cec8.png)
 
 **The magic happens in conversation:**
 
@@ -91,7 +95,7 @@ My first instinct was: "Can I just curl this thing?" I was still confused about 
 
 If you visit `https://www.mintlify.com/docs/mcp` in a browser, you can see the server capabilities. It shows you the available tools, their descriptions, and parameter schemas, similar to an OpenAPI spec.
 
-![](3271f791-36f1-4bba-ae88-08735eeccd8d.png)
+![Browser showing Mintlify MCP server capabilities as JSON, including available tools and their schemas](3271f791-36f1-4bba-ae88-08735eeccd8d.png)
 
 But can I actually call the tools with familiar HTTP tools?
 
@@ -156,7 +160,7 @@ data: {"result":{"content":[{"type":"text","text":"Title: Authentication\nLink: 
 
 ### Here's what the full flow looks like:
 
-![](06b50051-6c2a-4881-bb5c-7a23f820e32e.png)
+![Sequence diagram showing the MCP request flow: curl sends initialize request, server returns capabilities, curl calls tool, server returns results](06b50051-6c2a-4881-bb5c-7a23f820e32e.png)
 
 This was really helpful for me to understand what was part of the MCP spec and what’s happening when an agent uses an MCP tool. I wouldn’t use curl when implementing an MCP client, but it’s useful if you want to:
 
@@ -300,7 +304,7 @@ if __name__ == "__main__":
 
 Here’s an example of using it:
 
-![](91ac2069-d302-4a0e-9bcb-deba7f96dbd1.png)
+![Terminal showing the Strands research agent starting up and connecting to multiple MCP documentation servers](91ac2069-d302-4a0e-9bcb-deba7f96dbd1.png)
 
 1. **I ask**: "What are the Mintlify and Cursor API rate limits?"
 
@@ -312,7 +316,7 @@ Here’s an example of using it:
 
 1. **Intelligent synthesis**: Agent combines results and provides practical guidance
 
-![](71932218-124b-4e1d-a889-d8e52a5f3077.png)
+![Agent response synthesizing API rate limit information from both Mintlify and Cursor documentation](71932218-124b-4e1d-a889-d8e52a5f3077.png)
 
 What's so cool is that I never told it explicitly “search both Mintlify and Cursor for this question" or told it anything more than where to find the servers. It figured out from the question that it needed information from both sources, searched them independently, and synthesized the results.
 

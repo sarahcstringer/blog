@@ -1,11 +1,14 @@
 +++
 title = "Code execution with MCP: separating context from computation"
-description = "TL;DR: Traditional tool calling eats away at an agent's context window. All the tool definitions and every intermediate result pass through it."
+description = "How code execution with MCP reduces token usage by giving AI agents a workspace outside the context window for data-heavy processing tasks."
 date = "2025-11-14"
 
 [taxonomies]
 categories = ["Technical"]
 tags = ["MCP", "AI", "agents", "code-execution"]
+
+[extra]
+subtitle = "Traditional tool calling eats away at context. Code execution gives agents a scratch pad."
 +++
 
 **TL;DR:** Traditional tool calling eats away at an agent’s context window. All the tool definitions and every intermediate result pass through it. Code execution gives agents a “scratch pad” workspace to process data outside the context window. Combined with MCP’s tool abstractions, this can significantly reduce token usage for data-heavy tasks.

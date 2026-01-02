@@ -1,11 +1,14 @@
 +++
 title = "Claude Code beyond prompting"
-description = "Turns out I'd been using a Swiss Army knife with only the main blade"
+description = "Discovering Claude Code's advanced features beyond basic prompting: hooks, skills, subagents, and custom workflows for technical writing."
 date = "2025-12-31"
 
 [taxonomies]
 categories = ["Blog"]
 tags = ["AI", "Claude Code", "technical writing", "tooling", "workflows"]
+
+[extra]
+subtitle = "Turns out I'd been using a Swiss Army knife with only the main blade"
 +++
 
 In my first week writing documentation for Claude Code, I realized I'd been using a Swiss Army knife with only the main blade, unaware of what else it could do.

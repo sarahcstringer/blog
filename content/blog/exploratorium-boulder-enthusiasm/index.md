@@ -1,10 +1,14 @@
 +++
 title = "The Exploratorium boulder: why enthusiasm isn't always contagious"
 date = "2025-10-10"
-description = "On becoming the colleague I used to roll my eyes at."
+description = "Why enthusiasm for AI tools isn't always contagious, and what I learned about sharing new technologies with skeptical colleagues."
+
 [taxonomies]
 categories = ["Blog"]
 tags = ["AI", "collaboration", "empathy", "change-management"]
+
+[extra]
+subtitle = "On becoming the colleague I used to roll my eyes at."
 +++
 
 Seven months ago, I was skeptical of AI. I had a colleague who was wild about it, constantly building AI tools that no one else on the team used. His enthusiasm actually made me less inclined to try it. I assumed I already knew what he was doing with AI without ever trying it myself.
@@ -29,7 +33,7 @@ For example: I love using AI to generate a messy first draft that I can shape an
 
 The Exploratorium boulderMy favorite exhibit at the [Exploratorium](https://www.exploratorium.edu/) when I was a kid was a massive cement cylinder hanging from the ceiling, surrounded by a circle of tiny magnets on strings. The cylinder had a strip of metal around it, and the goal was to throw your magnet onto the metal, connect it, and then pull the boulder in your direction.
 
-![](3c2b3422-7844-4e8f-9c03-2adf435ccd60.png)
+![The Exploratorium boulder exhibit: a large cement cylinder hanging from the ceiling with small magnets on strings that visitors use to gently pull it](3c2b3422-7844-4e8f-9c03-2adf435ccd60.png)
 
 If you pulled hard, the magnet immediately detached. You got nowhere.
 

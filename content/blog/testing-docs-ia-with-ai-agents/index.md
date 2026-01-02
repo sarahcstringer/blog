@@ -1,10 +1,14 @@
 +++
 title = "Testing docs IA with AI agents"
 date = "2025-10-20"
-description = "Testing information architecture with agents, impatience, and one very frustrated bot."
+description = "Building an AI agent to test documentation information architecture by simulating how users navigate docs to find answers."
+
 [taxonomies]
 categories = ["Blog"]
 tags = ["documentation", "IA", "AI", "testing", "agents"]
+
+[extra]
+subtitle = "Testing information architecture with agents, impatience, and one very frustrated bot."
 +++
 
 A few days ago, I posted about [using the Claude Agent SDK to play the Wikipedia game](https://deatons.substack.com/p/can-ai-help-test-ia-a-wikipedia-game) as a way to think about docs navigation using an LLM.
@@ -13,7 +17,7 @@ This weekend I worked on an agent that would navigate my actual docs site with r
 
 [Link to the GitHub repository if you want to try it out.](https://github.com/sarahcstringer/docs-persona-navigator)
 
-![](8a106a9e-23be-4c18-91f5-e7dfeebda3dc.png)
+![Terminal output showing the docs persona navigator agent analyzing user questions and navigating documentation](8a106a9e-23be-4c18-91f5-e7dfeebda3dc.png)
 
 Here’s what I built, what it found, and why I’m excited about it.
 
@@ -41,7 +45,7 @@ You could also feed the same script any source of real user input: a CSV of supp
 
 A second script (`docs_navigation_test.py`) does the navigating. Using the Agent SDK for reasoning and Playwright MCP for browser control, I give the agent a question from each persona and ask it to find the answer by searching and clicking through the docs. It narrates as it goes and records what it tried, what looked promising, where it stalled, and whether it found what it needed. I tailored the prompt to have the agent mimic an impatient developer: favor the first few search results, skim, give up after a handful of misses, and show frustration when paths don’t work.
 
-![](a3c0adbf-de42-480e-9832-b66107e2ad54.png)
+![Screenshot of the agent using Playwright to browse documentation and narrate its navigation choices](a3c0adbf-de42-480e-9832-b66107e2ad54.png)
 
 ### Constraining behavior
 

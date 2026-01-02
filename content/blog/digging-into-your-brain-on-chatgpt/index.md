@@ -1,10 +1,14 @@
 +++
 title = "Digging into \"Your Brain on ChatGPT\""
 date = "2025-09-10"
-description = "How educational is a 20 minute SAT essay, really?"
+description = "A critical look at the MIT 'Your Brain on ChatGPT' study and why sensationalized AI research headlines make productive conversations harder."
+
 [taxonomies]
 categories = ["Blog"]
 tags = ["AI", "education", "research", "critique"]
+
+[extra]
+subtitle = "How educational is a 20 minute SAT essay, really?"
 +++
 
 You’ve probably seen the headlines:

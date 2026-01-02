@@ -1,11 +1,14 @@
 +++
 title = "We all fall down: notes from an ordinary outage"
-description = "On loops, priorities, and the fragility of complex systems."
+description = "A detailed post-mortem of a Kubernetes outage where a routine video processing job brought down an entire streaming cluster for five days."
 date = "2025-09-06"
 
 [taxonomies]
 categories = ["Blog"]
 tags = ["infrastructure", "kubernetes", "outages", "SRE"]
+
+[extra]
+subtitle = "On loops, priorities, and the fragility of complex systems."
 +++
 
 I love incidents. They’re like mini soap operas, tech stacks buckling under ordinary circumstances for unpredictable reasons, cascading failures, humans rushing to figure out what happened. So normal and each time so unexpected.
@@ -84,7 +87,7 @@ Not having done Kubernetes work myself, I wondered why they couldn’t just dele
 
 If you delete one, the Job controller notices: “Oh, that pod disappeared, but the job isn’t done yet” and it immediately schedules a new one. And in this outage, the admission controller was down, which meant nothing new could start anyway, so trying to “clean up” jobs didn’t help. They’d just boomerang back or stay pending, still clogging the scheduler’s brain.
 
-![](885b17a1-659f-4469-836a-184b006a5c47.png)
+![Diagram illustrating the Kubernetes job boomerang effect: deleting a pod causes the Job controller to immediately schedule a replacement](885b17a1-659f-4469-836a-184b006a5c47.png)
 
 ## The recovery
 

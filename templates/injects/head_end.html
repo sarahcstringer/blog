@@ -1,3 +1,69 @@
+<!-- Twitter Card meta tags -->
+<meta name="twitter:card" content="summary_large_image" />
+{%- if page.title %}
+<meta name="twitter:title" content="{{ page.title }}" />
+{%- elif section is defined and section.title %}
+<meta name="twitter:title" content="{{ section.title }}" />
+{%- else %}
+<meta name="twitter:title" content="{{ config.title }}" />
+{%- endif %}
+{%- if page.description %}
+<meta name="twitter:description" content="{{ page.description | truncate(length=200) }}" />
+{%- elif section is defined and section.description %}
+<meta name="twitter:description" content="{{ section.description | truncate(length=200) }}" />
+{%- elif config.description %}
+<meta name="twitter:description" content="{{ config.description | truncate(length=200) }}" />
+{%- endif %}
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "{{ config.title }}",
+  "description": "{{ config.description | safe }}",
+  "url": "{{ config.base_url }}",
+  "author": {
+    "@type": "Person",
+    "name": "Sarah Deaton",
+    "jobTitle": "Technical Content Engineer",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "Anthropic"
+    },
+    "sameAs": [
+      "https://www.linkedin.com/in/sarahstringerdeaton/"
+    ]
+  }
+}
+</script>
+{%- if page.title and page.date %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "{{ page.title }}",
+  "description": "{{ page.description | default(value='') }}",
+  "datePublished": "{{ page.date | date(format='%Y-%m-%d') }}",
+  {%- if page.updated %}
+  "dateModified": "{{ page.updated | date(format='%Y-%m-%d') }}",
+  {%- endif %}
+  "author": {
+    "@type": "Person",
+    "name": "Sarah Deaton"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Sarah Deaton"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ page.permalink }}"
+  }
+}
+</script>
+{%- endif %}
+
 <!-- Custom fonts: Radley for headers, Open Sans for body -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,6 +109,13 @@ header .page-description {
   color: #666;
   margin-top: 0.5em;
   margin-bottom: 1em;
+}
+
+/* Allow descriptions to wrap on listing page instead of truncating */
+section.block-bg .truncate {
+  overflow: visible !important;
+  text-overflow: unset !important;
+  white-space: normal !important;
 }
 
 /* Remove decorative backticks from inline code */
