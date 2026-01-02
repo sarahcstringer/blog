@@ -98,5 +98,6 @@ show_description = true
 # Navigation menu
 menu = [
     { name = "Blog posts", url = "$BASE_URL/" },
-    { name = "About", url = "$BASE_URL/about" }
+    { name = "About", url = "$BASE_URL/about" },
+    { name = "RSS", url = "$BASE_URL/rss.xml" }
 ]
