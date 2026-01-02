@@ -266,7 +266,6 @@ Here's how I'm starting to think about it:
 | **Skills** | Specialized instructions | How to approach specific doc types | API docs skill, tutorial skill |
 | **Subagents** | Parallel work | Reviews that can run in the background | Tech reviewer, code tester |
 | **Hooks** | Automatic guardrails | Checks you always want to run | Linter, sound notification |
-| **MCP** | External systems | Access to tools and data outside your codebase | Slack, GitHub |
 
 The goal isn't to use all of these. It's to know they exist so you can reach for them when they'd help.
 
@@ -286,3 +285,7 @@ If you're already using it but mainly just prompting:
 4. **Spawn a subagent** for parallel reviews. When you repeat the same instructions, save it as a configuration.
 
 You don't need to set up everything at once. Add tools when you notice friction.
+
+---
+
+What's stuck with me most is realizing how much intentional design went into building this ecosystem. Each tool solves a different problem around context, isolation, and automation. I'm still learning which ones fit which workflows, but having them available means I can shape how I work instead of working around the limitations of a single interface.
