@@ -118,6 +118,20 @@ Now your `CLAUDE.md` can stay lean with only universal guidelines, while special
 
 ([Full skills documentation](https://code.claude.com/docs/en/skills))
 
+---
+
+**A note on Skills vs MCP:** I've heard people say that Skills make MCP servers less useful, but that's not the case. They serve different purposes. **MCP is the connection to your data** (Slack, GitHub, Google Drive). **Skills are the instructions for how to use that data.**
+
+For example:
+- MCP server connects Claude to your GitHub issues
+- Skill says "When reviewing docs, check issues labeled 'documentation' for common user confusion"
+
+You can have MCP without skills (you just prompt every time), but skills paired with MCP are way more powerful. Skills turn "I have access to this data" into "here's when and how to use it."
+
+([MCP documentation](https://code.claude.com/docs/en/mcp))
+
+---
+
 ### Subagents: Parallel work without losing focus
 
 Subagents are separate Claude sessions that run in the background with their own context. The main agent passes specific context to them, and they report back when done.
