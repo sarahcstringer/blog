@@ -217,7 +217,7 @@ Another useful one: a sound notification when Claude finishes a message. I tend 
 ```json
 {
   "hooks": {
-    "PostMessage": [{
+    "Stop": [{
       "matcher": "assistant",
       "command": "afplay /System/Library/Sounds/Glass.aiff"
     }]
