@@ -157,6 +157,75 @@ h6:hover .header-anchor {
 .header-anchor:hover {
   color: #0066cc;
 }
+
+/* Click-to-zoom for content images */
+article img,
+main img,
+.content img {
+  cursor: zoom-in;
+}
+
+.image-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: zoom-out;
+  opacity: 0;
+  transition: opacity 0.2s;
+  padding: 2rem;
+}
+
+.image-zoom-overlay.active {
+  opacity: 1;
+}
+
+.image-zoom-overlay img {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Copy button for code blocks */
+pre {
+  position: relative;
+}
+
+.code-copy-btn {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  padding: 0.25em 0.6em;
+  font-size: 0.75em;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ddd;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, background 0.2s;
+  z-index: 1;
+}
+
+pre:hover .code-copy-btn,
+.code-copy-btn:focus {
+  opacity: 1;
+}
+
+.code-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.code-copy-btn.copied {
+  opacity: 1;
+  background: rgba(100, 200, 100, 0.3);
+  color: #fff;
+}
 </style>
 
 <script>
@@ -194,6 +263,75 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     header.appendChild(anchor);
+  });
+});
+
+// Click-to-zoom for content images
+document.addEventListener('DOMContentLoaded', function() {
+  const images = document.querySelectorAll('article img, main img, .content img');
+
+  images.forEach(img => {
+    if (img.closest('a')) return;
+
+    img.addEventListener('click', function() {
+      const overlay = document.createElement('div');
+      overlay.className = 'image-zoom-overlay';
+
+      const zoomed = document.createElement('img');
+      zoomed.src = img.currentSrc || img.src;
+      zoomed.alt = img.alt || '';
+
+      overlay.appendChild(zoomed);
+      document.body.appendChild(overlay);
+
+      requestAnimationFrame(() => overlay.classList.add('active'));
+
+      const close = () => {
+        overlay.classList.remove('active');
+        setTimeout(() => overlay.remove(), 200);
+        document.removeEventListener('keydown', escHandler);
+      };
+
+      const escHandler = (e) => {
+        if (e.key === 'Escape') close();
+      };
+
+      overlay.addEventListener('click', close);
+      document.addEventListener('keydown', escHandler);
+    });
+  });
+});
+
+// Copy button for code blocks
+document.addEventListener('DOMContentLoaded', function() {
+  const blocks = document.querySelectorAll('pre');
+
+  blocks.forEach(pre => {
+    if (pre.querySelector('.code-copy-btn')) return;
+    const code = pre.querySelector('code');
+    if (!code) return;
+
+    const btn = document.createElement('button');
+    btn.className = 'code-copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'Copy';
+    btn.setAttribute('aria-label', 'Copy code to clipboard');
+
+    btn.addEventListener('click', function() {
+      navigator.clipboard.writeText(code.textContent).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 1500);
+      }).catch(() => {
+        btn.textContent = 'Error';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+      });
+    });
+
+    pre.appendChild(btn);
   });
 });
 </script>
