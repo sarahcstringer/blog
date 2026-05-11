@@ -15,18 +15,18 @@ Most of how I've customized Claude Code so far has been on the side that changes
 
 A separate set of customization knobs sits alongside those, and they don't really change what Claude does, just how being in the CLI feels. The settings in this group are things like spinner verbs, themes, status lines, the welcome box, and the commit trailer.
 
-What inspired me to pull them all together was watching other people character-ify their spinner verbs. I'd been treating it as a fun one-off customization, until I started seeing screenshots of people swapping their verbs out for things Bender from Futurama would say, or Moira Rose from Schitt's Creek (*Bombinating*, *Effulging*, *Pontificating*). I wanted to see if I could extend this character feel in Claude Code through more of the settings I'd collected in my head.
+What inspired me to pull them all together was watching other people character-ify their spinner verbs. I'd been treating it as a fun one-off customization, until I started seeing screenshots of people swapping their verbs out for things Bender from Futurama would say, or Moira Rose from Schitt's Creek (*Bombinating*, *Effulging*, *Pontificating*). I wanted to see if I could extend this character in Claude Code through more of the settings I'd collected in my head.
 
-## The ensemble
+## Setting the stage
 
 Here's what I ended up with after pulling things together. This screenshot is mid-conversation with the Moira persona:
 
 ![A Claude Code session running the Moira persona. At the top, a previous response reads "Local incantations: zola serve for the dressing room, zola build for opening night." Below that is the user's next message, "which drafts are currently in progress?", followed by a spinner showing "Effulging…" with the tip "Crows have eyes. So does the linter." floating beneath it. The status line at the bottom reads "🌹 Act I — the stage is set, bébé. (3% staged)."](moira-spinner.png)
 
 Reading the screenshot top to bottom:
-- The response has a Moira-feel (incantations, etc) because of the **[output style](#output-style-the-voice)**
-- `Effulging…` and the `Crows have eyes...` beneath it are a custom **[spinner verb and tip](#flourish-spinner-verbs-and-tips)**
-- The color palette — deep wine, gold, ivory — is a custom **[theme](#theme-the-dressing-room)**
+- The response has a Moira-feel (incantations, opening night, etc) because of the **[output style](#output-style-the-voice)**
+- `Effulging…` and the `Crows have eyes` line beneath it are a custom **[spinner verb and tip](#flourish-spinner-verbs-and-tips)**
+- The color palette (deep wine, gold, ivory) is a custom **[theme](#theme-the-dressing-room)**
 - The `🌹 Act I` strip at the bottom is a **[status line](#status-line-the-bottom-strip)** that reframes the context window as the show progressing
 
 A few touchpoints [aren't visible here but contribute to the experience](#off-scene-company-announcements-git-attribution-and-the-curtain-call): a company announcement that introduces Moira on launch, a custom git attribution trailer that credits her on every commit, and a hook that has my laptop say *curtain* out loud when I close the session.
@@ -43,7 +43,7 @@ They were all fun, but Moira was the one I kept coming back to. There's somethin
 
 ## The full ensemble: it's all in settings.json
 
-Here's what the start of a Moira session actually looks like — welcome banner from a company announcement at the top, her voice kicking in as soon as she's read the project, status line steady at the bottom:
+Here's what the start of a Moira session actually looks like, with a welcome banner from a company announcement at the top, her voice kicking in as soon as she's read the project, and a status line steady at the bottom:
 
 ![Opening of a Claude Code session running the Moira persona: a welcome banner reading "🥀 Welcome, bébé. The stage is set. Moira Rose is at your service.", the user asking "please describe this project", and Moira responding "One moment, darling — permit me a glance at the playbill before I describe the production." followed by "Here is the playbill, bébé." after reading files. The status line at the bottom reads "🌹 Act I — the stage is set, bébé. (3% staged)."](moira-session.png)
 
@@ -55,6 +55,7 @@ All of this lives in `~/.claude/settings.json`, which the CLI reads on launch fo
 
 I did all of this in my user-level settings because I didn't want the people I work with to be greeted with *bébé*. Here's the relevant bits, minus everything unrelated:
 
+{% expandable() %}
 ```json
 {
   "outputStyle": "moira-rose",
@@ -94,6 +95,7 @@ I did all of this in my user-level settings because I didn't want the people I w
   }
 }
 ```
+{% end %}
 
 A few of those settings keys point at files that sit alongside `settings.json`:
 
@@ -116,8 +118,9 @@ What an output style actually does is replace part of Claude Code's default syst
 
 Because the system prompt is the foundation Claude Code builds everything else on, anything you put there carries more weight than an in-context instruction would. And once the session is going, the file doesn't get re-read the way a skill does each time it triggers.
 
-Here's an abbreviated version of `~/.claude/output-styles/moira-rose.md`:
+Here's an abbreviated version of `~/.claude/output-styles/moira-rose.md`. I still wanted the Claude Code software abilities, so I made sure the file framed her as also having been "pressed into service as an interactive software engineering assistant."
 
+{% expandable() %}
 ```markdown
 # You are Moira Rose
 
@@ -152,6 +155,7 @@ You are still a careful engineer. You read before you edit. You verify before
 you claim. Code itself is sacred — no theatrical variable names, no
 soliloquising in docstrings. The voice lives *around* the code, never *in* it.
 ```
+{% end %}
 
 The full file goes further with sample exchanges, what to avoid, and when to break character.
 
@@ -208,6 +212,7 @@ When you wire one up, Claude Code sends your command a JSON blob on stdin with f
 
 I gave Moira a status line that frames the context window as the show progressing. The line starts as a backstage murmur before any context exists, moves through Act I once the session is rolling, and ends in stage-blood crimson when she's almost out of room. The colors shift along with the acts, from gold through rose, fuchsia, and crimson. This is `~/.claude/statusline-moira.sh`:
 
+{% expandable() %}
 ```bash
 #!/bin/bash
 # Moira Rose status line — dramatic act commentary based on context window usage.
@@ -252,8 +257,9 @@ else
     printf "%s" "$line"
 fi
 ```
+{% end %}
 
-The branch on an empty `used` covers a small but charming case. At the very top of a session, before any turn has been sent, there isn't a `remaining_percentage` field on stdin yet. So instead of a defaulted-to-zero number that reads weirdly, the line shows `🥀 The understudy is still in makeup, bébé.` until the show actually starts.
+The branch on an empty `used` handles the case where the session has just started and there isn't a `remaining_percentage` field on stdin yet. Instead of a defaulted-to-zero number that reads weirdly, the line shows `🥀 The understudy is still in makeup, bébé.` until the show actually starts.
 
 And `settings.json` just points at the script:
 
@@ -282,6 +288,10 @@ A few of the touchpoints don't show up in the main CLI scroll, but they bookend 
 ]
 ```
 
+Which renders as a welcome banner on every launch:
+
+![Claude Code launch screen showing the version header (Claude Code v2.1.119, Opus 4.7, Claude Pro), followed by the announcement line "🥀 Welcome, bébé. The stage is set. Moira Rose is at your service." and a status line at the bottom reading "🌹 The understudy is still in makeup, bébé."](moira-announcement.png)
+
 {% admonition(type="tip", title="When this is actually useful") %}
 This is mostly meant for org admins to push notices through managed settings — code freezes, version updates, that kind of thing — but it works in a personal config too, and is a nice place for note-to-self info you want on every launch.
 {% end %}
@@ -295,7 +305,9 @@ This is mostly meant for org admins to push notices through managed settings —
 }
 ```
 
-Every commit Moira makes now ends with that line.
+Every commit Moira makes now ends with that line:
+
+![A git log entry showing a commit dated Mon May 11 07:01:35 2026 with the message "Add 'Costuming Claude Code' post." followed by the trailer "🌹 Composed in collaboration with Moira Rose, via Claude Code" and "Co-Authored-By: Moira Rose <moira@roseapothecary.com>"](moira-attribution.png)
 
 {% admonition(type="tip", title="When this is actually useful") %}
 Tracking which commits had AI involvement, if your team or compliance process cares about that. You can also set both fields to `""` to remove the trailer entirely.
@@ -335,11 +347,11 @@ The `&` at the end backgrounds `say` so the hook returns immediately and Claude 
 Hooks are kind of the general-purpose way to inject determinism into an otherwise nondeterministic AI process. `PreToolUse` lets you inspect or block a command before it runs (think "no `rm -rf` outside the project dir"), `PostToolUse` is great for logging shell commands to an audit file, `Stop` can ping you when a long turn finishes, and `Notification` can ping you when Claude is stuck waiting on input.
 {% end %}
 
-The thing I'll keep saying about hooks until I'm blue in the face is that prompts aren't guardrails, hooks are. If there's something Claude really shouldn't do, a `PreToolUse` hook that actually blocks it is more reliable than asking nicely in your CLAUDE.md and hoping the model holds the line.
+(Also, since we're on the subject of hooks, the thing I'll keep saying: prompts aren't guardrails, hooks are. If there's something Claude really shouldn't do, a `PreToolUse` hook that actually blocks it is more reliable than asking nicely in your `CLAUDE.md` and hoping the model holds the line.)
 
 ## Swapping costumes
 
-Once Moira was working, I started building the same setup for Worf and Bob Ross, where I quickly ran into the obvious problem that you only get one `settings.json`. The fix is small: keep one settings file per character on disk, and point `~/.claude/settings.json` at whichever one you want active.
+Once Moira was working, I started building the same setup for Worf, Bob Ross, and a few other characters. I kept one settings file per character on disk, and pointed `~/.claude/settings.json` at whichever one I wanted activated.
 
 ```
 ~/.claude/
@@ -369,25 +381,10 @@ costume() {
 
 Now `costume moira` puts the whole getup on, `costume worf` swaps it for the Klingon, and `costume` on its own takes everything off and you're back to plain Claude Code. The next session picks up whichever one was left dangling.
 
-The thing I didn't expect was how much of the charm comes from *forgetting* I'd put one on. I'd swap to Worf for a goof, get pulled into something else, come back hours later to fire off a mundane question about token costs, and read something like:
+The thing I didn't expect was how much of the charm comes from *forgetting* I'd put one on. I'd swap to Worf for fun, get pulled into something else, come back hours later to fire off a mundane question about token costs, and read something like:
 
 > A worthy question. A warrior must know the cost of every weapon he carries.
 
-That's the moment I'd remember oh right, I left Worf loaded. The surprise really is most of the fun, which made me want my characters to be intermittent rather than always-on. So I added a tiny `claude` shell wrapper that gives me a roughly one-in-five chance of loading a costume on launch:
+That's the moment I'd remember oh right, I left Worf loaded. The surprise really is most of the fun.
 
-```bash
-claude() {
-  if [ $((RANDOM % 5)) -eq 0 ]; then
-    ln -sf ~/.claude/settings.moira.json ~/.claude/settings.json
-  else
-    ln -sf ~/.claude/settings.default.json ~/.claude/settings.json
-  fi
-  command claude "$@"
-}
-```
-
-Four out of five sessions are vanilla, and every fifth is Moira. `command claude` runs the real CLI after the symlink has been swapped, so the new session reads whichever `settings.json` the dice just rolled. You could weight it however you want, mix in more characters, or route by day of week, but for me the one-in-five frequency feels about right for keeping the surprise alive.
-
----
-
-None of this makes me a better engineer. The actual coding doesn't get any easier inside the costume. What it does is make four hours a day in the terminal feel a little weirder, and weird is doing more for me lately than I'd expected. Somewhere between the wine-colored prompts and my laptop murmuring *curtain* into the room when I close the session, the whole thing has started to feel like the right amount of theatre for a Tuesday afternoon.
+None of this makes me a better engineer, but it does add some humor to living in Claude Code for hours of my life. Somewhere between the wine-colored prompts and my laptop murmuring *curtain* into the room when I close the session, the whole thing has started to feel like the right amount of theatre for a Tuesday afternoon.
