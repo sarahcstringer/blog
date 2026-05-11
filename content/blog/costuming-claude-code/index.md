@@ -284,7 +284,7 @@ A few of the touchpoints don't show up in the main CLI scroll, but they bookend 
 
 ```json
 "companyAnnouncements": [
-  "🌹 The stage is set. Moira Rose is at your service."
+  "🥀 Welcome, bébé. The stage is set. Moira Rose is at your service."
 ]
 ```
 
