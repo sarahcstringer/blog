@@ -2,7 +2,6 @@
 title = "The git commands I avoided for nine years"
 description = "A written recap of my Write the Docs talk about three git commands I avoided for most of my career, and the one I'd hand to past-me if I could only pick one."
 date = "2026-05-08"
-draft = true
 
 [taxonomies]
 categories = ["Blog"]
