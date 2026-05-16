@@ -1,19 +1,21 @@
 +++
 title = "Making All Caps as a Service"
-description = "A walkthrough of building ACAAS, All Caps as a Service, from scratch as a demo docs site for Write the Docs, using Claude Code, Claude Design, and Mintlify."
-date = "2026-05-12"
+description = "A walkthrough of building ACAAS, All Caps as a Service, from scratch as a demo docs site for my Write the Docs talk."
+date = "2026-05-16"
 
 [taxonomies]
 categories = ["Blog"]
 tags = ["Claude Code", "developer-experience", "technical writing", "tooling"]
 
 [extra]
-subtitle = "I just needed something to demo against. It has rate limits now."
+subtitle = "A fake API, a real docs site, and far more polish than the whole thing required."
 +++
 
 For my recent [Write the Docs talk](../git-talk-recap/), I needed a docs site that felt real enough to demo against. I didn't have a convenient API lying around to document, so I built a toy API and a full docs site on top of that; overengineered, but did what I wanted and it was a fun side quest.
 
-This is the full walkthrough of building ACAAS, All Caps as a Service. Looking back, I thought it was an interesting, abbreviated case study in docs tooling and building a site from scratch, so I wanted to jot down the decisions and steps.
+This is the full walkthrough of building ACAAS, [All Caps as a Service](https://acaas.mintlify.app/). Looking back, I thought it was an interesting, abbreviated case study in some AI/docs tooling and building a site from scratch, so I wanted to jot down the decisions and steps.
+
+![ACAAS docs homepage, showing the hero and primary navigation.](acaas-home.png)
 
 ## 1. Build the service
 
@@ -25,9 +27,9 @@ After it finished building the API, I ran `/simplify`, which is [a bundled Claud
 
 ## 2. Find a documentation platform
 
-My first instinct for the docs platform was Zola or Astro. But before choosing, I did a sanity check on Mintlify, which I've worked with professionally for a couple of years and have never tried spinning up for a personal project. I'd assumed the free tier would be limited in some way that didn't fit a one-off demo site, but it wasn't. I created [acaas.mintlify.app](https://acaas.mintlify.app) in about a minute, cloned the repo, and was ready to go.
+My first instinct for the docs platform was [Zola](https://www.getzola.org/) or [Astro](https://astro.build/). But before choosing, I did a sanity check on [Mintlify](https://www.mintlify.com/), which I've worked with professionally for a couple of years and have never tried spinning up for a personal project. I'd assumed the free tier would be limited in some way that didn't fit a one-off demo site, but it wasn't. I created [acaas.mintlify.app](https://acaas.mintlify.app) in about a minute, cloned the repo, and was ready to go.
 
-I was mildly embarrassed not to have known about the free tier, having worked with Mintlify for so long. I also kind of want to move my blog over to Mintlify now. The free tier comes with analytics, an editor, and a full agent tooling surface. I'd assumed at least half of that was paywalled.
+I was mildly embarrassed not to have known about the free tier. I also kind of want to move my blog over to Mintlify now.
 
 ![The Mintlify analytics dashboard for ACAAS, with 19 visitors and 41 views over a recent date range, a Humans/Agents traffic split, a Visitors Over Time bar chart, and a left sidebar covering Home, Editor, Analytics, Settings, and an Agents group for Workflows, Agent, Assistant, and MCP.](mintlify-dashboard.png)
 
@@ -51,18 +53,18 @@ This step was pretty anticlimactic in a nice way. Claude took the design handoff
 
 ## 5. Scaffold the docs
 
-I let AI generate the content with little direction, and I feel very fine about that. I said I wanted getting-started guides, cookbooks, and a changelog, and it produced them. They're not in my voice, none of the cookbook recipes are tested, and I'm sure a few are confidently wrong in ways that don't matter for a demo.
+I let AI generate the content with little direction, and I feel very fine about that. I said I wanted getting-started guides, cookbooks, and a changelog, and it produced them. I'm sure a few are confidently wrong in ways that don't matter for a demo.
 
-The thing that surprised me was that new Mintlify sites ship with a pre-built `AGENTS.md` file and a `.claude/` directory with settings and skills scaffolding for working with Mintlify, along with some basic style guides. Claude Code already understood how Mintlify projects were structured before I told it anything.
+One thing that surprised me was that new Mintlify sites ship with a pre-built `AGENTS.md` file and a `.claude/` directory with settings and skills scaffolding for working with Mintlify, along with some basic style guides. The core instructions felt fairly useful/didn't include anything I'd argue didn't deserve to be there.
 
 ## 6. Create an OpenAPI spec
 
 The last piece was an API reference section. This is one of my favorite Mintlify features, even though the docs I work on now don't have an API component. The API reference pages are built in and include an interactive playground where visitors can make live calls to the service from inside the docs themselves. All it needs is an OpenAPI spec, which Claude Code generated directly from the service code.
 
+![The ACAAS API reference section generated from the OpenAPI spec, with a "Try it" panel and request/response examples.](acaas-openapi.png)
+
 ---
 
-Start to finish, the whole build was about two hours, most of which was the design step and a small detour deciding how much realism the rate limits needed.
+Start to finish, the whole build was about two hours, most of which was the design step and a small detour deciding how much realism the rate limits needed. A year ago I would have spent the same two hours scaffolding just the initial API and decided nevermind maybe I'll go a different direction.
 
-What I kept noticing was how quiet the handoffs between tools were. The Claude Design export plugged into Claude Code without me reformatting anything. The Mintlify scaffolding meant I didn't have to onboard Claude Code to the project separately. The OpenAPI spec came from the code rather than being written from scratch. Every layer had a tool that fit it. A year ago I would have spent the same two hours scaffolding just the initial API and called it a productive afternoon.
-
-End result: <!-- FLAGGED: fragment, no subject — consider "I used this in my talk..." or restructure --> used this in my talk [the git commands I avoided for nine years](../git-talk-recap/).
+End result: I used the demo in my talk, [the git commands I avoided for nine years](../git-talk-recap/).

@@ -1,14 +1,14 @@
 +++
 title = "The git commands I avoided for nine years"
 description = "A written recap of my Write the Docs talk about three git commands I avoided for most of my career, and the one I'd hand to past-me if I could only pick one."
-date = "2026-05-11"
+date = "2026-05-15"
 
 [taxonomies]
 categories = ["Blog"]
 tags = ["git", "talks", "developer-experience"]
 
 [extra]
-subtitle = "Three commands, and the one I'd hand to past-me first."
+subtitle = "Reflog reflog reflog (and two others)"
 +++
 
 <!--
@@ -17,59 +17,65 @@ TODO before publishing:
   with-worktrees.mp4, with-reflog.mp4, update-refs.mp4
 -->
 
-I recently gave a [talk](https://www.youtube.com/watch?v=FiGT3XYICSE) at [Write the Docs](https://www.writethedocs.org/) about three git commands I'd been avoiding for most of my career, or in two cases didn't know existed at all.
+I recently gave a [talk](https://www.youtube.com/watch?v=FiGT3XYICSE) at [Write the Docs](https://www.writethedocs.org/) about three git commands I'd been avoiding for most of my career, or in two cases didn't know existed at all. For the demo environment behind the talk, I built [All Caps as a Service](../making-acaas/), a fake API and docs site that turned into its own side quest.
 
-To properly set expectations up front: I'm not a git expert. I've used git almost daily for a decade with a workflow I'll describe in a minute, and only recently realized how much of the tool I'd been ignoring. I gave the talk and wrote this post because you don't need to be a git expert to get a long way with the tool, or to look into the parts you've been avoiding.
+To properly set expectations up front: I'm not a git expert. I've used git almost daily for a decade with a workflow I'll describe in a minute, and recently discovered some parts of git that changed my thinking on it. I gave the talk and wrote this post because you don't need to be a git expert to get a long way with the tool, or to look into the parts you've been avoiding.
+
+<iframe
+  width="100%"
+  height="415"
+  src="https://www.youtube.com/embed/FiGT3XYICSE"
+  title="The git commands I avoided for nine years"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowfullscreen
+></iframe>
 
 ![Sketchnote of the talk by Dennis Dawson. A timeline of sticky notes across the top reads "The Git Commands I Avoided for Nine Years (and why I wish I hadn't)." Below, three commands are illustrated: git worktree, described as creating a second checkout of the repo; git reflog, described as an undo button for recovering lost commits, deleted branches, and bad rebases; and git rebase --update-refs, described as automagically force-updating all local branches that point to commits being rebased. Jujutsu (jj) appears at the bottom, described as reimagining what a commit is with no staging area and conflicts as first-class objects. On the right, "commit often" is written vertically in large pink letters.](git-talk-sketchnote.jpg)
 
-*Sketchnote by [Dennis Dawson](https://dennissdawson.wixsite.com/mr--dawson/portfolio), via the [Write the Docs Flickr](https://www.flickr.com/photos/writethedocs/55266348341/in/album-72177720333614185). The reflog drawing is so cute.*
+*Sketchnote by [Dennis Dawson](https://dennissdawson.wixsite.com/mr--dawson/portfolio), via the [Write the Docs Flickr](https://www.flickr.com/photos/writethedocs/55266348341/in/album-72177720333614185). I love the reflog drawing.*
 
 ## How I got here
 
 For the majority of my time in tech, I used about six git commands: `add`, `commit -m "wip"`, `rebase -i`, `commit --amend`, `cherry-pick`, `push`. Add, save, clean up the history, polish, and push. It worked, and it produced nice clean PRs.
 
-When I first learned git in a software engineering bootcamp, the framing was unambiguous. Git could be dangerous, you could lose work, and you should stay inside a small set of safe commands. Above all, don't touch rebase while you're learning. If you got into a mess with it, you were on your own. That kind of framing keeps you safe, but it also keeps you from exploring the parts of the tool that would make you safer.
+When I first learned git in a software engineering bootcamp, the framing was unambiguous. Git was esssential but could be dangerous. You could lose work, and you should stay inside a small set of safe commands. Above all, don't touch rebase while you're learning. If you got into a mess with it, you were on your own.
 
-I eventually went to work on teams with other engineers, learned about collaborating on projects using git, added `git rebase -i` to my toolkit, and felt pretty accomplished. My daily git commands worked for the most part... except for the few times when I'd do a bad rebase, and think I lost hours of work, despair and start over. Or get into a really tangled merge conflict and just end up deleting the branch and pulling down again from the remote. I just kind of thought that was the way it was.
+I eventually went to work on teams with other engineers, learned about collaborating on projects using git, added `git rebase -i` to my toolkit, and felt pretty accomplished. My daily git commands worked for the most part... except for the few times when I'd do a bad rebase, and think I lost hours of work, despair and start over. Or get into a really tangled merge conflict and just end up deleting the branch and pulling down again from the remote. I thought that was the way it was; git was powerful with some rough edges.
 
 What changed this for me had nothing to do with git initially. Last year, I wanted to run two Claude Code sessions on the same repo on different branches at once, purely for parallelism. I didn't know how to do this, because as far as I knew, you could only have one branch checked out for a repo at a given time on your computer.
 
-The fix turned out to be `git worktree`, a git feature rather than anything to do with Claude Code. It also addressed a paper cut I'd been living with for years: the stash-checkout-checkout-back-stash-pop dance every time I wanted to spin up a quick branch for a typo fix when I was in the middle of other work. Fixing a problem I didn't know I had made me wonder what else was there and what I should incorporate into my toolkit.
+[The fix turned out to be `git worktree`](https://code.claude.com/docs/en/worktrees), a git feature rather than anything to do with Claude Code. It also addressed a paper cut I'd been living with for years that I didn't even realized I'd had: the stash-checkout-checkout-back-stash-pop dance every time I wanted to spin up a quick branch for a typo fix when I was in the middle of other work. Fixing a problem I hadn't let rise to consciousness made me wonder what else was there and what I should incorporate into my toolkit.
 
 ## The three commands
 
-I picked these three commands because they were the most directly useful ones that I found, and, in the case of git reflog, it changed my view of git entirely.
+I picked these three commands because they were the most directly useful ones that I found, and, in the case of git reflog, changed my view of git entirely.
 
 ### `git worktree`
 
 You're mid-edit on a quickstart change, and someone asks for a one-line typo fix on a different branch. The dance is `git stash`, `git checkout main`, `git checkout -b typo-fix`, fix it, `git checkout quickstart`, `git stash pop`. So much context switching and heaven forbid you get pulled away in the middle of it and have to remember where you were in the dance when you left off.
 
-Worktrees solve this context switching problem. The command `git worktree add ../typo-fix` makes a second working directory on your machine, pointing at the same repo. Then you can just cd into that directory, and you can have two branches open at the same time, without needing to wind down/stash your work from one task to switch to the other.
+Worktrees solve this context switching problem. The command `git worktree add ../typo-fix main -b typo-fix` makes a second working directory on your machine, pointing at the same repo, on a new branch. Then you can cd into that directory (`../typo-fix`) and have two branches open at the same time, without needing to wind down/stash your work from one task to switch to the other.
 
-The worktrees share the same `.git` history, but all the files are duplicated and in a clean state. The quickstart edits stay sitting in the original directory, untouched. Open the new folder in a second editor window, fix the typo, push, and the original is exactly where you left it.
+The worktrees share the same `.git` history, but all the files are duplicated and won't clobber each other as you make changes in each branch. The quickstart edits stay sitting in the original directory, untouched. Open the new folder in a second editor window, fix the typo, push, and the original is exactly where you left it.
 
 **When you'd reach for it:** any time you'd otherwise stash or do the checkout dance. Especially worth it if you context-switch between branches a lot.
 
 **When it shipped:** 2015, a year before I started learning git.
 
-<!-- <video src="with-worktrees.mp4" controls></video> -->
-
 ### `git reflog`
 
-A pronunciation note: it's *ref-log*, short for "reference log." I'd always pronounced it `git re-flog`, which made it sound made up and was the reason I didn't investigate it any further. Based on the people who came up after the talk, I'm not the only one who did this. But, this is the one command that made me rethink my whole vision of git and made me realize it's so much safer than I'd been taught.
+A pronunciation note: it's *ref-log*, short for "reference log." I'd always pronounced it `git re-flog`, which made it sound made up and was a primary reason I didn't investigate it any further. Based on the people who came up to me after the talk, I'm not the only one who did this. This is also the one command that made me rethink my whole vision of git and realize it's so much safer than I'd been taught.
 
-`git reflog` shows everywhere `HEAD` has been recently (every commit, reset, checkout, rebase, all of it). If you ever accidentally `git reset --hard` too far or drop a commit during a rebase, or get a tangled git history through a merge conflict, this is the command that saves you. The "lost" commit, or the good place you used to be but now aren't, is sitting right there in the reference log. You can always go back to it. Just run `git reflog`, find the SHA for the commit/place in time you want to return to, and `git reset --hard` back to that place.
+`git reflog` shows everywhere `HEAD` has been recently (every commit, reset, checkout, rebase, all of it). If you ever accidentally `git reset --hard` too far or drop a commit during a rebase, or get a tangled git history through a merge conflict, this is the command that saves you. The "lost" commit, or the good place you used to be but now aren't, is sitting right there in the reference log. You can always go back to it. Just run `git reflog`, find the SHA for the commit/place in time you want to return to, and `git reset` back to that place.
 
-The piece that finally clicked for me, which I'd been missing when I was taught: branches are **pointers**. Doing something like `reset` moves the pointer, but the commits themselves don't go anywhere. `reflog` is the trail the pointer left behind, kept for 90 days by default.
+The piece that finally clicked for me, which I'd been missing when I was taught: HEAD in your repository is just a **pointer**. Doing something like `reset` or changes branches moves the pointer, but the commits themselves don't go anywhere. `reflog` is the trail the pointer left behind, kept for 90 days by default.
 
 The one catch is that it only saves *committed* work, and uncommitted changes blown away by `reset --hard` are gone. Commit early and often!
 
 **When you'd reach for it:** any time you think you've lost work or are in an otherwise irreparable state.
 
 Neat trick: I also learned recently that you can even do things like `main@{one.week.ago}` to go back to where your main branch was a week ago. You don't even need to find exact commits but can say things like "I knew this was working two days ago, let's go back there."
-
-<!-- <video src="with-reflog.mp4" controls></video> -->
 
 ### `git rebase --update-refs`
 
@@ -79,9 +85,7 @@ You have a stacked PR (branch A off main, branch B off A). Someone lands a chang
 
 **When you'd reach for it:** stacked PRs that should all get updates from a branch at the same time.
 
-**When it shipped:** Git 2.38, October 2022. I'd originally planned to talk about `git rerere` (it remembers a conflict resolution and replays it next time the same one shows up), and found `--update-refs` while writing the talk.
-
-<!-- <video src="update-refs.mp4" controls></video> -->
+**When it shipped:** 2022. I'd originally planned to talk about `git rerere` (it remembers a conflict resolution and replays it next time the same one shows up), and found `--update-refs` while writing the talk.
 
 ## The one I think actually matters
 
@@ -117,11 +121,9 @@ Reflog records every move of HEAD, so all three are recoverable in the sense tha
 
 At the end of the talk I mentioned [Jujutsu (or `jj`)](https://github.com/jj-vcs/jj). I didn't even realize for a while that there were other version control systems being developed; I kind of thought git was the one we'd settled on. But of course there were VCS systems before and people are making new ones too, revisiting these foundational concepts and/or layering on top.
 
-I find `jj` to be really interesting because it's a more recent VCS that's gaining popularity. It can live alongside a git repo, sharing objects and remotes, but rethinks the model on top. `jj` has no staging area, and you carry conflicts with you across operations instead of resolving them on the spot. The command surface is also much smaller. I've just heard of it and haven't used it for real work, so I don't have an opinion on whether it's worth switching. But it's on the list, and if you've been bouncing off git for years and it still doesn't fit, that might be the direction to look.
+I find `jj` to be really interesting because it's a more recent VCS that's gaining popularity. It can live alongside a git repo, sharing objects and remotes, but rethinks the model. `jj` has no staging area, and you carry conflicts with you across operations instead of resolving them on the spot. The command surface is also much smaller. I've just heard of it and haven't used it for real work, so I don't have an opinion on whether it's worth switching. But it's on the list, and if you've been bouncing off git for years and it still doesn't fit, that might be the direction to look.
 
 ## Coda
-
-What kept coming up in the hallway after the talk was a version of the story I'd been telling on stage. *I'd just never looked.* Reflog has been in git since 2005 and still so many people have never seen it (and also all pronounced it `re-flog`).
 
 I keep coming back to one specific story. After learning software engineering at a bootcamp, I taught there for a year. One day a student ran a rebase even though we'd warned her against it. She lost a day of work and asked for help. The response from the instructors, mine included, was "oops, oh well, we told you so," and I still feel bad about it. Reflog would have walked her right back to where she was, but none of us knew about it, so none of us could tell her. What stuck with her instead was *git is dangerous, stay in the shallow end*.
 
