@@ -1,0 +1,9 @@
+{% extends "index.html" %}
+{% block main %}
+<div class="fm-404">
+  <p class="fm-chip fm-chip--plain">error</p>
+  <h1 class="fm-404__code">404</h1>
+  <p class="fm-404__sub">{{ _str::tr(key=`error_not_found`, d=g_d) | replace(from="404: ", to="") }}</p>
+  <a class="fm-back" href="{{ _link::rel(dest=get_url(path="/"), cu=_cu, base=_base) }}">← index</a>
+</div>
+{% endblock main %}
