@@ -1,0 +1,45 @@
+{# Photo-led index for the non-work section (books, sewing, knitting, whatever else).
+   Use with: content/other/_index.md  →  template = "other.html"
+   Each page can set extra.cover.image (and extra.cover.alt); pages without one
+   get a striped placeholder so the grid still reads. #}
+{% extends "index.html" %}
+{% block main %}
+{%- set makes = section.pages | sort(attribute="date") | reverse %}
+{%- set total = makes | length %}
+
+<section style="padding: 34px 0 6px; max-width: 60ch">
+  <span class="fm-chip fm-chip--plain">other things</span>
+  {%- if section.content %}
+  <div class="fm-body" style="padding-top: 16px">{{ section.content | safe }}</div>
+  {%- else %}
+  <p style="padding-top: 16px; color: var(--ink-2)">Books I loved, things I made, and whatever else I&rsquo;ve been thinking about away from the keyboard. The part of the site with pictures.</p>
+  {%- endif %}
+</section>
+
+<div class="fm-makes" style="padding-bottom: 20px">
+{%- for make in makes %}
+  {%- set n = total - loop.index0 %}
+  {%- set tag = make.taxonomies.tags | default(value=[]) | first | default(value="") %}
+  <article class="fm-make">
+    {%- if make.extra.cover and make.extra.cover.image %}
+    <figure class="fm-make__img">
+      <img src="{{ _link::rel(dest=make.extra.cover.image, cu=_cu, base=_base) }}" alt="{{ make.extra.cover.alt | default(value=make.title) }}" />
+    </figure>
+    {%- else %}
+    <div class="fm-make__slot"><span>photo</span></div>
+    {%- endif %}
+    <div class="fm-make__text">
+      <div class="fm-make__meta">
+        <span class="fm-num">{% if n < 10 %}0{% endif %}{{ n }}</span>
+        {%- if tag %}<span class="fm-chip fm-chip--plain">{{ tag }}</span>{% endif %}
+        <time class="fm-spacer" datetime="{{ make.date }}">{{ make.date }}</time>
+      </div>
+      <h2><a href="{{ _link::rel(dest=make.permalink, cu=_cu, base=_base) }}">{{ make.title }}</a></h2>
+      {%- if make.description %}
+      <p>{{ make.description }}</p>
+      {%- endif %}
+    </div>
+  </article>
+{%- endfor %}
+</div>
+{% endblock main %}

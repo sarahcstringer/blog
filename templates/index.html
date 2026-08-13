@@ -17,45 +17,150 @@
   <!-- End Head End inject -->
 </head>
 
-<body class="text-black duration-100 ease-out dark:text-white">
-  {% include "partials/header.html" %}
+<body>
+  {# ---------- masthead ---------- #}
+  {%- set home_url = _link::rel(dest=get_url(path="/"), cu=_cu, base=_base) %}
+  <header class="fm-masthead">
+    <div class="fm-wrap">
+      <div class="fm-masthead__meta">
+        <span>{{ config.title }}</span>
+        <span class="fm-spacer">est. 2025</span>
+        {#- Sun and moon are both in the markup; site.css shows whichever matches the scheme. #}
+        <button type="button" class="fm-themetoggle"
+          title="{{ _str::tr(key=`act_switch_color_scheme`, d=g_d) }} [Alt + $]" accesskey="$"
+          aria-label="{{ _str::tr(key=`act_switch_color_scheme`, d=g_d) }}"
+          onclick="window.zolaTheme.color.toggle();">
+          <svg class="fm-icon fm-icon--moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" />
+          </svg>
+          <svg class="fm-icon fm-icon--sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="4.2" />
+            <path d="M12 2.4v2.8M12 18.8v2.8M2.4 12h2.8M18.8 12h2.8M5.2 5.2l2 2M16.8 16.8l2 2M18.8 5.2l-2 2M7.2 16.8l-2 2" />
+          </svg>
+        </button>
+      </div>
+      <a class="fm-wordmark" href="{{ home_url }}">Docs, tools &amp;<br />other crafts</a>
+      <nav class="fm-nav">
+        {%- for item in config.extra.menu %}
+        {%- set item_url = item.url | replace(from="$BASE_URL", to=get_url(path="/", trailing_slash=false)) %}
+        {#- The root item would match every page under starting_with, so it needs an exact match. #}
+        {%- set root_url = get_url(path="/", trailing_slash=false) %}
+        {%- set is_root_item = item_url == root_url or item_url == root_url ~ "/" %}
+        {%- set is_active = false %}
+        {%- if current_url %}
+          {%- if is_root_item %}
+            {%- set is_active = current_url == root_url or current_url == root_url ~ "/" or current_url is starting_with(root_url ~ "/blog") %}
+          {%- else %}
+            {%- set is_active = current_url is starting_with(item_url) %}
+          {%- endif %}
+        {%- endif %}
+        <a href="{{ item_url }}"{% if is_active %} class="is-active"{% endif %}>{{ item.name }}</a>
+        {%- endfor %}
+      </nav>
+    </div>
+  </header>
+
   <!-- Begin Body Start inject -->
   {% include "injects/body_start.html" ignore missing %}
   <!-- End Body Start inject -->
-  <main class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg
-    relative mx-auto min-h-[calc(100vh-4rem)] max-w-3xl px-4 pt-28 lg:pt-32 pb-12 wrap-break-word">
-    {%- if config.build_search_index %}
-      {% include "partials/search.html" %}
-    {%- endif %}
+
+  <main class="fm-wrap">
     {% block main %}
-      {%- if g_profile is defined %}
-        {%- if paginator is undefined or paginator.current_index == 1 %}
-    {% include "partials/profile.html" %}
-        {%- endif %}
-      {%- elif section.title %}
-    <h1 class="mb-16">{{ section.title }}</h1>
-      {%- endif %}
       {%- if section.content %}
-    <section>{{ section.content | safe }}</section>
+      <section class="fm-body" style="padding-top: 30px">{{ section.content | safe }}</section>
       {%- endif %}
+
       {%- set blog_section = get_section(path="blog/_index.md") %}
       {%- set sorted_pages = blog_section.pages | sort(attribute="date") | reverse %}
+      {%- set total = sorted_pages | length %}
+
+      {#- featured: newest entry -#}
       {%- for page in sorted_pages %}
-<section
-  class="block-bg relative mb-4 rounded-lg p-4 first-of-type:mt-0 last-of-type:mb-0 active:scale-95 lg:mb-6 lg:p-6"
->
-  <h2 class="my-0! pb-1 leading-none! font-bold">{{ page.title }}</h2>
-  {%- if page.description %}
-  <div class="not-prose my-1 truncate">
-    <p>{{ page.description }}</p>
-  </div>
-  {%- endif %}
-  {% include "partials/page_info.html" %}
-  <a class="absolute inset-0 text-[0px]" href="{{ _link::rel(dest=page.permalink, cu=_cu, base=_base) }}">{{ page.title }}</a>
-</section>
+        {%- if loop.index0 == 0 %}
+          {%- set n = total %}
+          {%- if n < 10 %}{% set num = "00" ~ n %}{% elif n < 100 %}{% set num = "0" ~ n %}{% else %}{% set num = n | as_str %}{% endif %}
+      <article class="fm-feature">
+        <div class="fm-feature__body">
+          <span class="fm-chip fm-chip--green">newest entry</span>
+          <h2><a href="{{ _link::rel(dest=page.permalink, cu=_cu, base=_base) }}">{{ page.title }}</a></h2>
+          {%- if page.description %}
+          <p>{{ page.description }}</p>
+          {%- endif %}
+        </div>
+        <div class="fm-feature__num">{{ num }}</div>
+      </article>
+        {%- endif %}
       {%- endfor %}
+
+      <div class="fm-colhead">
+        <span class="c1">no.</span>
+        <span class="c2">entry</span>
+        <span>filed under · date</span>
+      </div>
+
+      <div class="fm-index">
+      {%- for page in sorted_pages %}
+        {%- if loop.index0 > 0 %}
+          {%- set n = total - loop.index0 %}
+          {%- if n < 10 %}{% set num = "00" ~ n %}{% elif n < 100 %}{% set num = "0" ~ n %}{% else %}{% set num = n | as_str %}{% endif %}
+          {%- set tag = page.taxonomies.tags | default(value=[]) | first | default(value="") %}
+          {%- set tagk = tag | lower %}
+          {%- set chip = "fm-chip--docs" %}
+          {%- if tagk == "talks" or tagk == "essay" or tagk == "writing" or tagk == "git" or tagk == "infrastructure" or tagk == "sre" or tagk == "outages" %}{% set chip = "fm-chip--talks" %}
+          {%- elif tagk == "ai" or tagk == "claudecode" or tagk == "claude code" or tagk == "claude-code" or tagk == "mcp" or tagk == "agents" or tagk == "tools" or tagk == "tooling" or tagk == "hooks" or tagk == "automation" %}{% set chip = "fm-chip--tools" %}
+          {%- endif %}
+        <article class="fm-entry">
+          <span class="fm-entry__num">{{ num }}</span>
+          <div class="fm-entry__body">
+            <h3><a href="{{ _link::rel(dest=page.permalink, cu=_cu, base=_base) }}">{{ page.title }}</a></h3>
+            {%- if page.description %}
+            <p>{{ page.description }}</p>
+            {%- endif %}
+          </div>
+          {%- if tag %}
+          <span class="fm-entry__meta"><span class="fm-chip {{ chip }}">{{ tag }}</span></span>
+          {%- endif %}
+          <time class="fm-entry__date" datetime="{{ page.date }}">{{ page.date }}</time>
+        </article>
+        {%- endif %}
+      {%- endfor %}
+        <div class="fm-indexfoot">
+          <span class="fm-spacer">{{ total }} entries since 2025</span>
+        </div>
+      </div>
+
+      {#- "other things" teaser: only shown once that section exists -#}
+      {%- if config.extra.other_section | default(value=false) %}
+      {%- set knitting = get_section(path="other/_index.md") %}
+      <section class="fm-sectionk">
+        <div class="fm-sectionk__head">
+          <span class="fm-chip fm-chip--plain">other things</span>
+          <h2>{{ knitting.title | default(value="Books, sewing, and other things") }}</h2>
+          <a class="fm-more" href="{{ _link::rel(dest=knitting.permalink, cu=_cu, base=_base) }}">see all →</a>
+        </div>
+        <div class="fm-makes fm-makes--strip">
+        {%- set recent = knitting.pages | sort(attribute="date") | reverse %}
+        {%- for make in recent %}
+          {%- if loop.index0 < 4 %}
+          <a class="fm-strip-item" href="{{ _link::rel(dest=make.permalink, cu=_cu, base=_base) }}">
+            {%- if make.extra.cover and make.extra.cover.image %}
+            <figure class="fm-make__img"><img src="{{ _link::rel(dest=make.extra.cover.image, cu=_cu, base=_base) }}" alt="{{ make.extra.cover.alt | default(value=make.title) }}" /></figure>
+            {%- else %}
+            <div class="fm-make__slot"><span>photo</span></div>
+            {%- endif %}
+            <div class="fm-strip-item__label">
+              <span class="fm-num">{{ loop.revindex }}</span>
+              <span>{{ make.title }}</span>
+            </div>
+          </a>
+          {%- endif %}
+        {%- endfor %}
+        </div>
+      </section>
+      {%- endif %}
     {% endblock main %}
   </main>
+
   {% include "partials/footer.html" %}
   {% include "partials/body_res.html" %}
   <!-- Begin Body End inject -->

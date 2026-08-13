@@ -67,33 +67,15 @@
 </script>
 {%- endif %}
 
-<!-- Custom fonts: Radley for headers, Open Sans for body -->
+<!-- Site fonts: Bricolage Grotesque (display), Instrument Serif (titles), DM Mono (body/labels) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Radley:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Serif:ital@0;1&family=DM+Mono:ital,wght@0,300..500;1,300..500&family=Literata:ital,opsz,wght@0,7..72,300..600;1,7..72,300..600&display=swap" rel="stylesheet">
+
+<!-- Site design -->
+<link rel="stylesheet" href="{{ get_url(path='css/site.css') }}">
 
 <style>
-/* Body text - Open Sans (sans-serif) */
-body, p, li, td, th, .content {
-  font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-}
-
-/* Headers - Radley (serif) */
-h1, h2, h3, h4, h5, h6,
-.header-title,
-.site-title,
-.post-title,
-article header h1 {
-  font-family: 'Radley', Georgia, serif !important;
-}
-
-/* Site title and navbar - Radley (serif) */
-header a[class*="font-semibold"],
-nav menu li a,
-header .text-2xl {
-  font-family: 'Radley', Georgia, serif !important;
-}
-
 /* Hide reading time estimates and the separator before it */
 time[datetime^="PT"] {
   display: none !important;
@@ -146,11 +128,8 @@ blockquote p::after {
   margin-left: 0.5em;
   font-size: 0.8em;
   text-decoration: none;
-  color: #666;
+  color: var(--ink-3);
   transition: opacity 0.2s;
-}
-:root.dark .header-anchor {
-  color: #a1a1aa;
 }
 
 h1:hover .header-anchor,
@@ -163,10 +142,7 @@ h6:hover .header-anchor {
 }
 
 .header-anchor:hover {
-  color: #0066cc;
-}
-:root.dark .header-anchor:hover {
-  color: #60a5fa;
+  color: var(--ink);
 }
 
 /* Click-to-zoom for content images */
@@ -211,12 +187,14 @@ pre {
   top: 0.5em;
   right: 0.5em;
   padding: 0.25em 0.6em;
-  font-size: 0.75em;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: rgba(0, 0, 0, 0.08);
-  color: #333;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+  font-size: 0.7em;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-family: var(--mono);
+  background: var(--panel);
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  border-radius: 0;
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.2s, background 0.2s;
@@ -286,12 +264,15 @@ pre:hover .code-copy-btn,
   display: block;
   margin: 0.6rem auto 1.5rem;
   padding: 0.4em 1.2em;
-  font-size: 0.85em;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: rgba(0, 0, 0, 0.08);
-  color: #333;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+  font-size: 0.8em;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-family: var(--mono);
+  background: var(--card);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 var(--ink);
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -447,5 +428,75 @@ document.addEventListener('DOMContentLoaded', function() {
 
     wrapper.after(btn);
   });
+});
+</script>
+
+<!-- TOC: highlight the section you're reading, and follow clicks immediately -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const toc = document.querySelector('.fm-toc');
+  if (!toc) return;
+
+  // Pair each TOC link with its heading, in document order.
+  const entries = [];
+  toc.querySelectorAll('a[href^="#"]').forEach(function(link) {
+    let heading = null;
+    try { heading = document.getElementById(decodeURIComponent(link.hash.slice(1))); } catch (e) {}
+    if (heading) entries.push({ link: link, heading: heading });
+  });
+  if (!entries.length) return;
+
+  entries.sort(function(a, b) {
+    return a.heading.compareDocumentPosition(b.heading) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+  });
+
+  let current = null;
+  function setCurrent(link) {
+    if (link === current) return;
+    if (current) current.classList.remove('is-current');
+    if (link) link.classList.add('is-current');
+    current = link;
+  }
+
+  // A click wins until the jump settles, so the mark lands where you clicked.
+  let holdUntil = 0;
+  entries.forEach(function(entry) {
+    entry.link.addEventListener('click', function() {
+      setCurrent(entry.link);
+      holdUntil = Date.now() + 700;
+    });
+  });
+
+  // The heading whose top has passed the reading line is the one you're in.
+  const READING_LINE = 120;
+  function update() {
+    if (Date.now() < holdUntil) return;
+    let found = null;
+    for (let i = 0; i < entries.length; i++) {
+      if (entries[i].heading.getBoundingClientRect().top <= READING_LINE) found = entries[i].link;
+      else break;
+    }
+    setCurrent(found);
+  }
+
+  // Timestamp throttle with a trailing call. A requestAnimationFrame gate would
+  // wedge shut if the frame callback never fired, freezing the mark in place.
+  let lastRun = 0;
+  let trailing = null;
+  const INTERVAL = 80;
+  function onScroll() {
+    const now = Date.now();
+    clearTimeout(trailing);
+    if (now - lastRun >= INTERVAL) {
+      lastRun = now;
+      update();
+    } else {
+      trailing = setTimeout(function() { lastRun = Date.now(); update(); }, INTERVAL);
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  update();
 });
 </script>

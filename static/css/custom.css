@@ -1,28 +1,3 @@
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
-
-/* Body text - Open Sans (sans-serif) */
-body {
-  font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-/* Headers - Playfair Display (serif) */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 600;
-}
-
-/* Site title */
-.header-title,
-.site-title,
-header h1 {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 700;
-}
-
-/* Post titles */
-.post-title,
-article h1 {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-weight: 700;
-}
+/* Superseded by static/css/site.css (loaded from templates/injects/head_end.html).
+   Kept as an empty file so any existing <link> to it stays valid — add
+   one-off tweaks here if you want them to win over site.css. */

@@ -1,0 +1,66 @@
+{% extends "index.html" %}
+{%- block meta %}
+  {%- set g_is_article = true %}
+{%- endblock meta %}
+{% block main %}
+{%- if g_profile is defined %}
+{% include "partials/profile.html" %}
+{%- endif %}
+
+<div class="fm-post">
+  <article class="fm-post__article">
+    <div class="fm-post__meta">
+      <a class="fm-back" href="{{ _link::rel(dest=get_url(path="/"), cu=_cu, base=_base) }}">← index</a>
+    </div>
+
+    {%- if g_profile is undefined and (page.title or section.title) %}
+    <header>
+      <h1 class="fm-post__title">{% if page.title %}{{ page.title }}{% else %}{{ section.title }}{% endif %}</h1>
+      {%- if page.extra.subtitle %}
+      <p class="fm-post__sub">{{ page.extra.subtitle }}</p>
+      {%- elif page.description %}
+      <p class="fm-post__sub">{{ page.description }}</p>
+      {%- endif %}
+    </header>
+    {%- endif %}
+
+    {%- if page.content is defined %}
+    <div class="fm-body">{{ page.content | safe }}</div>
+    {%- elif section.content is defined %}
+    <div class="fm-body">{{ section.content | safe }}</div>
+    {%- endif %}
+
+    {%- if page.lower or page.higher %}
+    <div class="fm-postfoot">
+      <span class="fm-spacer">
+        {%- if page.lower %}<a href="{{ _link::rel(dest=page.lower.permalink, cu=_cu, base=_base) }}">← previous</a>{% endif %}
+        {%- if page.lower and page.higher %} &nbsp; {% endif %}
+        {%- if page.higher %}<a href="{{ _link::rel(dest=page.higher.permalink, cu=_cu, base=_base) }}">next →</a>{% endif %}
+      </span>
+    </div>
+    {%- endif %}
+  </article>
+
+  {%- if page.extra.toc | default(value=config.extra.toc) and page.toc | length > 1 %}
+  <aside class="fm-post__rail">
+    <div class="fm-toc">
+      <p class="fm-toc__label">contents</p>
+      <ul>
+        {%- for h in page.toc %}
+        <li>
+          <a href="#{{ h.id }}">{{ h.title }}</a>
+          {%- if h.children | length > 0 %}
+          <ul>
+            {%- for c in h.children %}
+            <li><a href="#{{ c.id }}">{{ c.title }}</a></li>
+            {%- endfor %}
+          </ul>
+          {%- endif %}
+        </li>
+        {%- endfor %}
+      </ul>
+    </div>
+  </aside>
+  {%- endif %}
+</div>
+{% endblock main %}
