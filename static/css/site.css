@@ -239,10 +239,12 @@ a:hover { color: var(--ink); }
   align-items: baseline;
   padding: 16px 14px;
   border-bottom: 1.5px solid var(--line);
-  transition: background .14s ease, transform .14s ease;
+  transition: background .14s ease;
 }
+.fm-entry > * { transition: transform .14s ease; }
 .fm-entry:last-of-type { border-bottom: 0; }
-.fm-entry:hover { background: var(--panel); transform: translateX(4px); }
+.fm-entry:hover { background: var(--panel); }
+.fm-entry:hover > * { transform: translateX(4px); }
 .fm-entry__num { flex: 0 0 42px; font-family: var(--display); font-weight: 700; font-size: 19px; letter-spacing: -0.02em; color: var(--ink); }
 .fm-entry__body { flex: 1 1 320px; min-width: 0; }
 .fm-entry h3 {
@@ -569,7 +571,7 @@ a:hover { color: var(--ink); }
 @media (max-width: 640px) {
   :root { --gutter: 20px; }
   .fm-feature { box-shadow: 5px 5px 0 var(--lilac); padding: 20px; }
-  .fm-entry:hover { transform: none; }
+  .fm-entry:hover > * { transform: none; }
 }
 
 @media print {
